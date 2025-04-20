@@ -1,0 +1,215 @@
+---
+title: 'AI Code Modification'
+description: 'Transform your code with AI using the code method'
+---
+
+# Modifying Code with AI
+
+The primary feature of the Local SDK is the ability to modify code using AI. This is done through the `code()` method.
+
+## The `code()` Method
+
+```python
+def code(
+    prompt: str,
+    editable_files: List[str],
+    readonly_files: Optional[List[str]] = None
+) -> Dict[str, Any]
+```
+
+### Parameters
+
+- **prompt** (`str`)
+  - Natural language instruction for the AI
+  - Be specific about what changes you want to make
+
+- **editable_files** (`List[str]`)
+  - Paths to files the AI may modify
+  - Can be relative (to working_dir) or absolute paths
+
+- **readonly_files** (`List[str]`, optional)
+  - Paths to files the AI may read but not change
+  - Useful for providing context to the AI
+
+### Return Value
+
+The `code()` method returns a dictionary containing:
+
+- **success** (`bool`)
+  - Whether meaningful changes were made
+  - `True` if changes were applied, `False` otherwise
+
+- **diff** (`str`)
+  - Git diff if use_git=True, otherwise a description of changes
+
+- **result** (`object`)
+  - The raw result object from the underlying coder
+
+- **cost** (`Dict[str, float]`)
+  - Contains cost information including:
+    - `message_cost`: cost of this specific operation
+    - `session_cost`: cumulative cost of the session
+    - `tokens`: token usage information
+
+- **marked_up_cost** (`Dict[str, float]`)
+  - Cost with a 20% markup
+
+- **credits_remaining** (`float`)
+  - Your remaining cloudcode credits (if authenticated)
+
+## Quick Start Example
+
+Run the real Quick Start script included in the examples:
+
+```bash
+python cloud-coding/examples/quick-start.py
+```
+
+This script will:
+- Create `src/calculator.py`
+- Add `multiply` and `divide` functions with zero-division handling
+- Print the diff and updated file content
+
+```python
+from cloudcode import Local
+import os
+
+sdk = Local(working_dir=os.getcwd(), api_key=os.getenv("CLOUD_CODE_API_KEY"))
+
+result = sdk.code(
+    prompt="Add multiply and divide functions to the calculator with zero-division handling.",
+    editable_files=["src/calculator.py"],
+    readonly_files=[]
+)
+
+if result["success"]:
+    print("Diff:", result["diff"])
+    print("Updated content:", sdk.read_file("src/calculator.py"))
+```
+
+## Multi-File Example
+
+Run the multi-file example script:
+
+```bash
+python cloud-coding/examples/example_usage.py
+```
+
+This script demonstrates:
+- Creating and reading files
+- Searching within files
+- Improving the calculator with AI
+
+```python
+# excerpt from example_usage.py
+from cloudcode import Local
+import os
+
+sdk = Local(working_dir="/Users/seansullivan/aider-sdk-testing/", api_key=os.getenv("CLOUD_CODE_API_KEY"))
+
+# Search for a specific string in files
+search_results = sdk.search_files("def add", ["src/*.py"])
+print("Search results:", search_results)
+
+# Add multiply and divide functions
+result = sdk.code(
+    prompt="Add multiply and divide function to the calculator.py file. Make sure to handle division by zero in the divide function.",
+    editable_files=["src/calculator.py"]
+)
+```
+
+## Advanced Usage
+
+### With Git Integration
+
+```python
+sdk = Local(
+    working_dir="/path/to/git/repo",
+    model="gpt-4.1",
+    api_key=os.getenv("CLOUDCODE_API_KEY"),
+    use_git=True
+)
+
+result = sdk.code(
+    prompt="Refactor the authentication system to use JWT tokens",
+    editable_files=["src/auth.py", "src/middleware.py"]
+)
+
+if result["success"]:
+    print("Changes made and staged in git:")
+    print(result["diff"])
+
+    # Now you can commit the changes
+    import subprocess
+    subprocess.run(["git", "commit", "-m", "Refactor auth to use JWT tokens"])
+```
+
+### With Architect Mode
+
+```python
+sdk = Local(
+    working_dir="/path/to/your/project",
+    model="gpt-4.1",
+    weak_model="gpt-4.1-nano",
+    architect_mode=True,
+    api_key=os.getenv("CLOUDCODE_API_KEY")
+)
+
+# Perform a complex task that benefits from planning
+result = sdk.code(
+    prompt="Implement a RESTful API with proper error handling and input validation",
+    editable_files=["app.py", "routes.py", "models.py", "validators.py"]
+)
+```
+
+## Best Practices
+
+### Writing Effective Prompts
+
+- Be specific about what you want to change
+- Mention any libraries, frameworks, or patterns to use
+- Specify error handling and edge cases
+- Reference existing patterns in the codebase
+
+```python
+# Good prompt example
+result = sdk.code(
+    prompt="""
+    Add a new function called 'process_batch' to utils.py that:
+    1. Takes a list of items and a batch size
+    2. Processes items in batches of the specified size
+    3. Uses the existing logger to log progress
+    4. Handles empty lists and invalid batch sizes
+    5. Follows the same error handling pattern as the other utility functions
+    """,
+    editable_files=["src/utils.py"],
+    readonly_files=["src/logger.py"]
+)
+```
+
+### Managing File Context
+
+- Group related files in the editable_files list
+- Use readonly_files to provide context without allowing changes
+- Limit the number of files for better results
+- Consider the dependencies between files
+
+### Error Handling
+
+Always check the success status and handle appropriately:
+
+```python
+result = sdk.code(
+    prompt="Add a new feature to process payments",
+    editable_files=["src/payments.py"]
+)
+
+if result["success"]:
+    print("Changes applied successfully!")
+    # Further actions with the modified code
+else:
+    print("No significant changes were made. Possible reasons:")
+    print("- The prompt may need to be more specific")
+    print("- The requested changes might be too small or unnecessary")
+    print("- The files might not be relevant to the task")
+```

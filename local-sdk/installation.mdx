@@ -1,0 +1,97 @@
+---
+title: 'Installation'
+description: 'How to install and set up the cloudcode SDK'
+---
+
+# Installing the Local SDK
+
+Getting started with the cloudcode SDK is straightforward. Follow these steps to install and set up the SDK in your environment.
+
+## Prerequisites
+
+- Python 3.10 or higher
+- Pip package manager
+- Access to cloudcode API key (or provider API keys)
+
+## Installation Steps
+
+### 1. Install via pip
+
+The simplest way to install the cloudcode SDK is via pip:
+
+```bash
+pip install cloudcode
+```
+
+This will install both the Local SDK and the Sandbox SDK components.
+
+### 2. Verify Installation
+
+You can verify the installation by importing the SDK in a Python script:
+
+```python
+from cloudcode import Local
+
+# Check available models
+models = Local.list_models()
+print(models)  # This should print a list of available AI models
+```
+
+## Setting Up API Keys
+
+### Option 1: Using cloudcode API Key (Recommended)
+
+```python
+import os
+from cloudcode import Local
+
+# Set environment variable (recommended for security)
+os.environ["CLOUDCODE_API_KEY"] = "your_cloudcode_api_key"
+
+# Or pass directly to the SDK
+sdk = Local(
+    working_dir="/path/to/your/project",
+    api_key="your_cloudcode_api_key"
+)
+```
+
+Using the cloudcode API key is recommended as it automatically handles provider keys and enables credit tracking.
+
+### Option 2: Using Provider API Keys Directly
+
+```python
+from cloudcode import Local
+
+sdk = Local(
+    working_dir="/path/to/your/project",
+    api_keys={
+        "openai": "your_openai_key",
+        "anthropic": "your_anthropic_key"
+    }
+)
+```
+
+Note that this legacy method only supports OpenAI and Anthropic keys.
+
+## Next Steps
+
+Once you've installed the SDK and set up your API keys, you can:
+
+- Learn about [configuration options](/local-sdk/configuration)
+- Start [modifying code with AI](/local-sdk/code)
+- Explore [file management capabilities](/local-sdk/files)
+
+For more advanced usage, check out the [Advanced Usage](/advanced-usage) guide.
+
+## Quick Start Example
+
+After installing and setting up your API key, try the included Quick Start script:
+
+```bash
+python cloud-coding/examples/quick-start.py
+```
+
+This script will:
+- Create `src/calculator.py`
+- Add `multiply` and `divide` functions with zero-division handling
+- Print the diff and updated file content

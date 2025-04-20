@@ -1,0 +1,95 @@
+---
+title: 'Running Commands'
+description: 'Execute shell commands and manage dependencies in the sandbox'
+---
+
+# Running Commands
+
+The Sandbox SDK provides the `run_command()` method to execute shell commands in your isolated sandbox environment.
+
+## The `run_command()` Method
+
+```python
+def run_command(
+    command: str
+) -> Dict[str, Any]
+```
+
+- **command** (`str`): The shell command to execute in the sandbox
+- Returns a dictionary with:
+  - `stdout` (`str`): Standard output of the command
+  - `stderr` (`str`): Standard error output
+  - `exit_code` (`int`): Exit code of the process
+
+## Basic Usage
+
+```python
+# List files in the sandbox
+result = sdk.run_command("ls -la")
+print(result["stdout"])
+
+# Install Python packages
+sdk.run_command("pip install pandas numpy matplotlib")
+
+# Run a Python script
+sdk.run_command("python3 /home/user/analysis.py")
+```
+
+## Running Multiple Commands
+
+You can chain commands using `&&` or run them in background:
+
+```python
+# Chain commands
+sdk.run_command("cd /home/user && mkdir data && ls -la")
+
+# Start a background job
+sdk.run_command("python3 -m http.server 8080 &")
+```
+
+## Handling Results and Errors
+
+```python
+result = sdk.run_command("grep TODO *.py")
+if result["exit_code"] == 0:
+    print("Matches found:")
+    print(result["stdout"])
+else:
+    print("No matches or error:")
+    print(result["stderr"])
+```
+
+## Advanced Examples
+
+### Running Interactive or Long-Running Processes
+
+For interactive sessions or long-running jobs, you can run in background:
+
+```python
+# Launch a live server in the sandbox
+sdk.run_command(
+    "cd /home/user/project && uvicorn app:app --reload &"
+)
+```
+
+### Installing System Packages
+
+```python
+# Update and install system packages
+sdk.run_command("apt-get update && apt-get install -y curl vim")
+```
+
+### Managing Working Directory
+
+All commands are executed in the sandbox root by default. Use `cd` to change directories:
+
+```python
+sdk.run_command("cd /home/user/project && pytest --maxfail=1 --disable-warnings")
+```
+
+## Best Practices
+
+- Use absolute paths (`/home/user/...`) to avoid ambiguity
+- Chain commands when appropriate to reduce round-trips
+- Run long-running processes in background using `&`
+- Always check `exit_code` to handle errors programmatically

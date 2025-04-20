@@ -1,0 +1,62 @@
+---
+title: 'Local SDK Overview'
+description: 'AI-assisted coding in your local environment'
+---
+
+# Local SDK
+
+The `Local` class is the primary entry point for using the cloudcode Python SDK in your projects.
+
+This Class is the lowest level sdk you'll need to create an AI Coding agent.
+
+## Key Features
+
+- **AI-Powered Code Modification**: Transform code with natural language prompts using leading AI models like GPT-4 and Claude
+- **File Management**: Create, read, modify, and search files in your local environment
+- **Cost Tracking**: Monitor and manage your API usage with detailed cost reporting
+- **Git Integration**: Optional tracking of changes via git for easy review and rollback
+- **Asynchronous Processing**: Run long coding tasks in the background with headless mode
+- **Architect Mode**: Use a two-model approach for better efficiency and performance
+
+## When to Use Local SDK
+
+The Local SDK is ideal when you want to:
+
+- Integrate AI-assisted coding into your own applications or workflows
+- Work with code in your existing local environment
+- Maintain control over your files and version control
+- Track costs and manage API usage programmatically
+
+## Quick Start Example
+
+Run the real Quick Start script included in the examples:
+```bash
+python cloud-coding/examples/quick-start.py
+```
+
+This script will:
+- Create `src/calculator.py`
+- Add `multiply` and `divide` functions with zero-division handling
+- Print the diff and updated file content
+
+Here's the core snippet from `quick-start.py`:
+
+```python
+from cloudcode import Local
+import os
+
+sdk = Local(working_dir=os.getcwd(), api_key=os.getenv("CLOUD_CODE_API_KEY"))
+
+result = sdk.code(
+    prompt="Add multiply and divide functions to the calculator with zero-division handling.",
+    editable_files=["src/calculator.py"]
+)
+
+if result["success"]:
+    print("Changes:", result["diff"])
+    print("Updated content:", sdk.read_file("src/calculator.py"))
+```
+
+For installation instructions, see [Installation](/local-sdk/installation).
+
+To understand the configuration options, see [Configuration](/local-sdk/configuration).

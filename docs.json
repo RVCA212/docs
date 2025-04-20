@@ -1,11 +1,11 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "cloudcode SDK",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#9e48e8",
+    "light": "#ba81eb",
+    "dark": "#9e48e8"
   },
   "favicon": "/favicon.svg",
   "navigation": {
@@ -20,83 +20,71 @@
               "quickstart",
               "development"
             ]
+          }
+        ]
+      },
+      {
+        "tab": "Local SDK",
+        "groups": [
+          {
+            "group": "Basics",
+            "pages": [
+              "local-sdk/overview",
+              "local-sdk/installation",
+              "local-sdk/configuration"
+            ]
           },
           {
-            "group": "Essentials",
+            "group": "Features",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/settings",
-              "essentials/navigation",
-              "essentials/reusable-snippets"
+              "local-sdk/code",
+              "local-sdk/files",
+              "local-sdk/commands",
+              "local-sdk/headless",
+              "local-sdk/git-integration"
             ]
           }
         ]
       },
       {
-        "tab": "API Reference",
+        "tab": "Sandbox SDK",
         "groups": [
           {
-            "group": "API Documentation",
+            "group": "Basics",
             "pages": [
-              "api-reference/introduction"
+              "sandbox-sdk/overview",
+              "sandbox-sdk/setup"
             ]
           },
           {
-            "group": "Endpoint Examples",
+            "group": "Features",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "sandbox-sdk/files",
+              "sandbox-sdk/running-commands",
+              "sandbox-sdk/ai-coding",
+              "sandbox-sdk/management"
             ]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Community",
-          "href": "https://mintlify.com/community",
-          "icon": "slack"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
+    ]
   },
   "logo": {
     "light": "/logo/light.svg",
     "dark": "/logo/dark.svg"
   },
   "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
+    "links": [],
     "primary": {
       "type": "button",
       "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "href": "https://cloudcoding.ai"
     }
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "x": "https://x.com/LM_SYS",
+      "github": "https://github.com/LMSystems-ai/cloud-coding"
     }
   }
 }

@@ -1,0 +1,76 @@
+---
+title: 'File Operations'
+description: 'Create, upload, read, and download files in the sandbox'
+---
+
+# Working with Files
+
+The Sandbox SDK provides methods to manage files in your remote sandbox environment.
+
+## Creating a File
+
+```python
+sdk.create_file(
+    "hello.py",  # Path in the sandbox
+    """
+    def greet(name):
+        return f"Hello, {name}!"
+
+    print(greet("World"))
+    """
+)
+```
+
+After creating the file, you can run it:
+
+```python
+result = sdk.run_command("python3 hello.py")
+print(result["stdout"])  # Outputs: Hello, World!
+```
+
+## Uploading Files
+
+There are two ways to upload files or directories:
+
+### Upload a Single File
+
+```python
+sdk.upload_file(
+    "local_script.py",         # Path on your local machine
+    "/home/user/uploaded.py"   # Destination path in the sandbox
+)
+```
+
+### Upload an Entire Directory
+
+```python
+sdk.write_to_sandbox(
+    content="",                    # Ignored for directory uploads
+    local_directory="./my_project",
+    sandbox_directory="/home/user/project"
+)
+```
+
+## Reading Files
+
+```python
+# Read text file
+content = sdk.read_sandbox_file("/home/user/hello.py")
+print(content)
+
+# Read binary data
+binary = sdk.read_sandbox_file(
+    "/home/user/image.png",
+    as_string=False
+)
+```
+
+## Downloading Files
+
+```python
+# Download a file from the sandbox to your local machine
+sdk.download_file(
+    "/home/user/results.txt",  # Path in sandbox
+    "local_results.txt"        # Local destination
+)
+```

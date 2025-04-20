@@ -1,0 +1,85 @@
+---
+title: 'Setup'
+description: 'Install and initialize the Sandbox SDK'
+---
+
+# Sandbox SDK Setup
+
+Getting started with the Sandbox SDK is easy. Follow these steps to install the package, configure your credentials, and initialize a sandbox.
+
+## Prerequisites
+
+- Python 3.8 or higher
+- Pip package manager
+- Valid `CLOUDCODE_API_KEY`
+
+## 1. Install via pip
+
+Install the `cloudcode` package, which includes both Local and Sandbox SDKs:
+
+```bash
+pip install cloudcode
+```
+
+## 2. Set Up API Keys
+
+The Sandbox SDK uses your CloudCode API key to authenticate and manage resources.
+
+### Recommended: Use CloudCode API Key
+
+Set the environment variable in your shell:
+
+```bash
+export CLOUDCODE_API_KEY="your_cloudcode_api_key"
+```
+
+Or in Python:
+
+```python
+import os
+os.environ["CLOUDCODE_API_KEY"] = "your_cloudcode_api_key"
+```
+
+### Alternative: Provider Keys (Legacy)
+
+You can also pass OpenAI and Anthropic keys directly (not recommended):
+
+```python
+from cloudcode import SandboxSDK
+
+sdk = SandboxSDK(
+    model="gpt-4.1",
+    api_keys={
+        "openai": "your_openai_key",
+        "anthropic": "your_anthropic_key"
+    }
+)
+```
+
+## 3. Initialize the Sandbox SDK
+
+Import and create an instance of `SandboxSDK`:
+
+```python
+from cloudcode import SandboxSDK
+import os
+
+sdk = SandboxSDK(
+    model="gpt-4.1",               # Choose your AI model
+    api_key=os.getenv("CLOUDCODE_API_KEY"),
+    sandbox_timeout=600              # Sandbox lifetime in seconds (default 600)
+)
+
+# Verify connection and sandbox creation
+info = sdk.get_sandbox_info()
+print(f"Sandbox ID: {info['sandbox_id']}")
+print(f"Expires at: {info['end_at']}")
+```
+
+You're now ready to work in an isolated sandbox environment.
+
+For usage examples, see:
+- [File operations](/sandbox-sdk/files)
+- [Running commands](/sandbox-sdk/running-commands)
+- [AI coding](/sandbox-sdk/ai-coding)
+- [Sandbox management](/sandbox-sdk/management)

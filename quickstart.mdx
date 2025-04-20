@@ -1,97 +1,175 @@
 ---
 title: 'Quickstart'
-description: 'Start building awesome documentation in under 5 minutes'
+description: 'Get started with cloudcode SDK in minutes'
 ---
 
-## Setup your development
+## Installation
 
-Learn how to update your docs locally and deploy them to the public.
-
-### Edit and preview
+Get started with cloudcode SDK in just a few simple steps.
 
 <AccordionGroup>
-  <Accordion icon="github" title="Clone your docs locally">
-    During the onboarding process, we created a repository on your Github with
-    your docs content. You can find this repository on our
-    [dashboard](https://dashboard.mintlify.com). To clone the repository
-    locally, follow these
-    [instructions](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
-    in your terminal.
+  <Accordion icon="terminal" title="Install via pip">
+    Install the cloudcode SDK using pip:
+
+    ```bash
+    pip install cloudcode
+    ```
+
+    This will install both the Local and Sandbox components of the SDK.
   </Accordion>
-  <Accordion icon="rectangle-terminal" title="Preview changes">
-    Previewing helps you make sure your changes look as intended. We built a
-    command line interface to render these changes locally. 
-    1. Install the
-    [Mintlify CLI](https://www.npmjs.com/package/mintlify) to preview the
-    documentation changes locally with this command: ``` npm i -g mintlify ```
-    2. Run the following command at the root of your documentation (where
-    `docs.json` is): ``` mintlify dev ```
+
+  <Accordion icon="key" title="Set up API keys">
+    To use the SDK, you'll need the appropriate API keys:
+
+    ```python
+    import os
+
+    # Set environment variables for your API keys
+    os.environ["CLOUDCODE_API_KEY"] = "your_cloudcode_api_key"
+
+    # Alternatively, you can pass them directly to the SDK
+    from cloudcode import Local
+
+    sdk = Local(
+        working_dir="/path/to/your/project",
+        api_key="your_cloudcode_api_key"
+    )
+    ```
     <Note>
-      If you’re currently using the legacy ```mint.json``` configuration file, please update the Mintlify CLI:
-
-
-      ```npm i -g mintlify@latest```
-      And run the new upgrade command in your docs repository:
-
-      ```mintlify upgrade```
-      You should now be using the new ```docs.json``` configuration file. Feel free to delete the ```mint.json``` file from your repository.
+      Using the cloudcode API key is recommended as it handles provider keys automatically.
+      For direct provider access, you can also use:
+      ```python
+      sdk = Local(
+          working_dir="/path/to/your/project",
+          api_keys={
+              "openai": "your_openai_key",
+              "anthropic": "your_anthropic_key"
+          }
+      )
+      ```
     </Note>
   </Accordion>
 </AccordionGroup>
 
-### Deploy your changes
+## Quick Examples
 
-<AccordionGroup>
+### Local SDK
 
-<Accordion icon="message-bot" title="Install our Github app">
-  Our Github app automatically deploys your changes to your docs site, so you
-  don't need to manage deployments yourself. You can find the link to install on
-  your [dashboard](https://dashboard.mintlify.com). Once the bot has been
-  successfully installed, there should be a check mark next to the commit hash
-  of the repo.
-</Accordion>
-<Accordion icon="rocket" title="Push your changes">
-  [Commit and push your changes to
-  Git](https://docs.github.com/en/get-started/using-git/pushing-commits-to-a-remote-repository#about-git-push)
-  for your changes to update in your docs site. If you push and don't see that
-  the Github app successfully deployed your changes, you can also manually
-  update your docs through our [dashboard](https://dashboard.mintlify.com).
-</Accordion>
+The Local SDK provides AI-assisted coding in your local environment:
 
-</AccordionGroup>
+```python
+from cloudcode import Local
+import os
 
-## Update your docs
+# Initialize the SDK
+sdk = Local(
+    working_dir="/path/to/your/project",
+    model="gpt-4.1-nano",  # Choose your preferred AI model
+    api_key=os.getenv("CLOUDCODE_API_KEY"),
+    use_git=True  # Optional: Enable Git integration for tracking changes
+)
 
-Add content directly in your files with MDX syntax and React components. You can use any of our components, or even build your own.
+# Create a file
+sdk.create_file(
+    "calculator.py",
+    """def add(a, b):
+    return a + b
+"""
+)
+
+# Improve the code with AI
+result = sdk.code(
+    prompt="Add subtract, multiply, and divide functions to the calculator",
+    editable_files=["calculator.py"]
+)
+
+if result["success"]:
+    print("Changes applied successfully!")
+    print(result["diff"])  # View the Git diff or description of changes
+
+    # Check the cost of this operation
+    cost = result["cost"]
+    print(f"Operation cost: ${cost['message_cost']:.4f}")
+    print(f"Credits remaining: {result['credits_remaining']}")
+```
+
+### Sandbox SDK
+
+The SandboxSDK allows you to run code safely in a remote environment:
+
+```python
+from cloudcode import SandboxSDK
+import os
+
+# Initialize the SDK
+sdk = SandboxSDK(
+    model="gpt-4.1",
+    api_key=os.getenv("CLOUDCODE_API_KEY"),
+    sandbox_timeout=600  # 10 minutes (in seconds)
+)
+
+# Check sandbox info
+info = sdk.get_sandbox_info()
+print(f"Sandbox created with ID: {info['sandbox_id']}")
+print(f"Expires at: {info['end_at']}")
+
+# Create a file in the sandbox
+sdk.create_file(
+    "test.py",
+    """def add(a, b):
+    return a + b
+
+print(add(5, 3))
+"""
+)
+
+# Run the file
+result = sdk.run_command("python3 test.py")
+print(result["stdout"])  # Outputs: 8
+
+# Use AI to improve the code
+sdk.sandbox_code(
+    prompt="Add subtract and multiply functions with proper error handling",
+    editable_files=["/home/user/test.py"]
+)
+
+# Download the improved file
+sdk.download_file("/home/user/test.py", "local_test.py")
+
+# Shut down the sandbox when done
+sdk.kill_sandbox()
+```
+
+## Next Steps
 
 <CardGroup>
 
-<Card title="Add Content With MDX" icon="file" href="/essentials/markdown">
-  Add content to your docs with MDX syntax.
+<Card title="Local SDK Reference" icon="laptop-code" href="/local-sdk">
+  Explore the full capabilities of the Local SDK
 </Card>
 
 <Card
-  title="Add Code Blocks"
-  icon="square-code"
-  href="/essentials/code"
+  title="Sandbox SDK Reference"
+  icon="shield-halved"
+  href="/sandbox-sdk"
 >
-  Add code directly to your docs with syntax highlighting.
+  Learn about remote code execution in the Sandbox
 </Card>
 
 <Card
-  title="Add Images"
-  icon="image"
-  href="/essentials/images"
+  title="Advanced Usage"
+  icon="graduation-cap"
+  href="/advanced-usage"
 >
-  Add images to your docs to make them more engaging.
+  Discover advanced techniques and best practices
 </Card>
 
 <Card
-  title="Add Custom Components"
-  icon="puzzle-piece"
-  href="/essentials/reusable-snippets"
+  title="API Reference"
+  icon="code"
+  href="/api-reference"
 >
-  Add templates to your docs to make them more reusable.
+  View the complete API documentation
 </Card>
 
 </CardGroup>

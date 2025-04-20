@@ -1,0 +1,81 @@
+---
+title: 'Running Commands'
+description: 'Execute shell commands in your project or sandbox with the Local SDK'
+---
+
+# Running Commands
+
+The Local SDK provides methods to execute shell commands in your environment or in a secure sandbox. This is useful for automating tasks, running tests, or interacting with your codebase programmatically.
+
+## When to Use Command Execution
+
+- Automate build, test, or deployment steps as part of your AI workflows
+- Run shell commands in a controlled, isolated environment (sandbox)
+- Integrate command output into your coding agent's workflow
+
+> **Note:**
+> - The `run_command` method is only available on the `SandboxSDK` class, not on the base `Local` class.
+> - Use the sandbox for running untrusted or potentially dangerous commands.
+
+## Quick Start Example
+
+First, create a `SandboxSDK` instance:
+
+```python
+from cloudcode import SandboxSDK
+import os
+
+sdk = SandboxSDK(api_key=os.getenv("CLOUD_CODE_API_KEY"))
+```
+
+Now, run a shell command in the sandbox:
+
+```python
+result = sdk.run_command("ls -l /home/user")
+
+print("Exit code:", result["exit_code"])
+print("STDOUT:\n", result["stdout"])
+print("STDERR:\n", result["stderr"])
+```
+
+### Example: Run Python Tests in the Sandbox
+
+```python
+# Suppose you have uploaded your project files to the sandbox already
+result = sdk.run_command("pytest tests/")
+
+if result["exit_code"] == 0:
+    print("All tests passed!")
+else:
+    print("Test failures detected:")
+    print(result["stdout"])
+```
+
+## Command Execution API
+
+### `run_command(command: str) -> dict`
+
+Runs a shell command in the sandbox and returns a dictionary with:
+- `exit_code`: The command's exit code (0 means success)
+- `stdout`: The standard output of the command
+- `stderr`: The standard error output
+
+#### Example
+
+```python
+result = sdk.run_command("echo Hello, world!")
+print(result["stdout"])  # Output: Hello, world!
+```
+
+## Best Practices
+
+- Use the sandbox for any commands that modify files, install packages, or could affect system state.
+- Always check the `exit_code` to determine if the command succeeded.
+- For long-running commands, consider using headless mode or background jobs.
+- Upload any required files to the sandbox before running commands that depend on them.
+
+## Related Topics
+
+- [File Management](/local-sdk/files)
+- [AI Coding Tasks](/local-sdk/code)
+- [Headless Mode](/local-sdk/headless)

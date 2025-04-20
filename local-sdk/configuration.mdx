@@ -1,0 +1,110 @@
+---
+title: 'Configuration'
+description: 'Configure the Local SDK to match your needs'
+---
+
+# Local SDK Configuration
+
+The `Local` class lets you customize how the Cloud Code SDK works in your project. Here's how to set it up for common scenarios, with simple examples.
+
+## Quick Start: Minimal Setup
+
+```python
+from cloudcode import Local
+import os
+
+sdk = Local(
+    working_dir=os.getcwd(),
+    api_key=os.getenv("CLOUD_CODE_API_KEY")
+)
+```
+- **working_dir**: Directory for file operations (usually your project root)
+- **api_key**: Your Cloud Code API key (recommended via environment variable)
+
+## Common Configurations
+
+### 1. Basic Usage (No Git, Default Model)
+```python
+sdk = Local(
+    working_dir="/path/to/project",
+    api_key=os.getenv("CLOUD_CODE_API_KEY")
+)
+```
+- Use this for simple projects or scripts.
+
+### 2. Custom Model
+```python
+sdk = Local(
+    working_dir="/path/to/git/repo",
+    model="sonnet", # alias for claude-sonnet-3-7-latest
+    api_key=os.getenv("CLOUD_CODE_API_KEY")
+)
+```
+- Enables version control for all changes (must be inside a git repo).
+
+### 3. Architect Mode (Two-Model Workflow)
+```python
+sdk = Local(
+    working_dir=os.getcwd(),
+    model="o4-mini",           # Planner model
+    editor_model="gpt-4.1",   # Editor model
+    architect_mode=True,
+    use_git=False,             # Optional
+    api_key=os.getenv("CLOUD_CODE_API_KEY")
+)
+```
+- Use for large or complex changes. Planner model makes a plan, editor model applies changes.
+
+### 4. Custom Session Tracking
+```python
+sdk = Local(
+    working_dir=os.getcwd(),
+    session_id="my-session-123",
+    api_key=os.getenv("CLOUD_CODE_API_KEY")
+)
+```
+- Set a custom session ID for tracking usage.
+
+## All Configuration Options
+
+| Parameter        | Type    | Default           | Description |
+|------------------|---------|-------------------|-------------|
+| working_dir      | str     | **Required**      | Directory for file operations |
+| model            | str     | "gpt-4.1-nano"    | Main AI model |
+| editor_model     | str     | None              | Separate model for editing (used in architect mode) |
+| use_git          | bool    | False             | Use git for version control |
+| api_key          | str     | **Required**              | Cloud Code API key |
+| architect_mode   | bool    | False             | Enable planner + editor workflow |
+| weak_model       | str     | None              | Weak model in architect mode |
+| session_id       | str     | None              | Custom session identifier |
+
+## How to List Available Models
+
+```python
+from cloudcode import Local
+
+print(Local.list_models())           # List all models
+print(Local.list_models("gpt"))     # Filter by name
+```
+
+## Example: Run a Coding Task
+
+```python
+result = sdk.code(
+    prompt="Add a multiply and divide function to calculator.py",
+    editable_files=["src/calculator.py"],
+    readonly_files=[]
+)
+if result["success"]:
+    print("Changes made:", result["diff"])
+```
+
+## Best Practices
+- Set API keys via environment variables for security
+- Enable git for important projects
+- Use architect_mode for big or complex changes
+- Pick models based on your task's complexity
+
+---
+
+For more examples, see the [examples folder](../../cloud-coding/examples/).

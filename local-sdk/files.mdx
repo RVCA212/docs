@@ -1,0 +1,130 @@
+---
+title: 'File Management'
+description: 'How to create, read, and search files using the Local SDK (with unified example)'
+---
+
+# File Management with the Local SDK
+
+The Local SDK provides a set of methods for managing files in your project directory. This guide explains how to use these methods, referencing the actual implementation in our [LangGraph React App](https://github.com/LMSystems-ai/cloud-coding/blob/main/langgraph/src/react.py). At the end, you'll find a unified example script that demonstrates all file operations together.
+
+## Overview of File Tools
+
+The main file management methods are:
+
+- **create_file(file_path, content)**: Create or overwrite a file with the given content.
+- **read_file(file_path)**: Read and return the content of a file.
+- **search_files(query, file_patterns)**: Search for lines matching a query across files.
+
+All file paths are **relative to your SDK's working directory**. The SDK will automatically create parent directories if they don't exist.
+
+> **Tip:** The SDK is designed for text files. For binary files, use encoding/decoding (see below).
+
+---
+
+## Method Reference
+
+### 1. Creating Files
+
+```python
+def create_file(file_path: str, content: str) -> bool
+```
+- **file_path** (`str`): Path to the file, relative to working_dir
+- **content** (`str`): Text content to write
+- **Returns** (`bool`): `True` on success, `False` otherwise
+
+### 2. Reading Files
+
+```python
+def read_file(file_path: str) -> Optional[str]
+```
+- **file_path** (`str`): Path to the file, relative to working_dir
+- **Returns** (`str` or `None`): File content as string, or `None` if the file does not exist
+
+### 3. Searching Files
+
+```python
+def search_files(query: str, file_patterns: Optional[List[str]] = None) -> Dict[str, List[str]]
+```
+- **query** (`str`): Substring or regex to match
+- **file_patterns** (`List[str]`, optional): Glob patterns for files to search (default: `['**/*']`)
+- **Returns** (`Dict[str, List[str]]`): Mapping of file paths to lists of matching lines
+
+---
+
+## Unified Example: All File Operations
+
+Below is a complete script that demonstrates how to use all file management commands together. This example is based on the actual usage in [`react.py`](../../cloud-coding/langgraph/src/react.py):
+
+```python
+from cloudcode import Local
+import os
+
+# Set your project directory and API key
+your_project_dir = "/path/to/your/project"
+sdk = Local(
+    working_dir=your_project_dir,
+    api_key=os.getenv("CLOUD_CODE_API_KEY"),
+)
+
+# 1. Create a new file
+file_path = "src/example.py"
+
+file_content = """
+def hello(name):
+    return f"Hello, {name}!"
+"""
+
+created = sdk.create_file(file_path, file_content)
+if created:
+    print(f"Created file: {file_path}")
+else:
+    print(f"Failed to create file: {file_path}")
+
+
+# 2. Read the file back
+content = sdk.read_file(file_path)
+if content is not None:
+    print(f"\nRead from {file_path}:\n{content}")
+else:
+    print(f"File {file_path} does not exist or could not be read.")
+
+
+# 3. Search for a function definition in all Python files
+search_query = "def hello"
+search_results = sdk.search_files(
+    query=search_query,
+    file_patterns=["src/**/*.py"]
+)
+print(f"\nSearch results for '{search_query}':")
+for path, lines in search_results.items():
+    print(f"- {path}")
+    for line in lines:
+        print(f"    {line.strip()}")
+
+
+# 4. (Optional) Handling binary files
+import base64
+binary_data = b'\x00\x01\x02\x03'
+encoded = base64.b64encode(binary_data).decode('utf-8')
+sdk.create_file("data/binary.dat", encoded)
+read_encoded = sdk.read_file("data/binary.dat")
+if read_encoded:
+    binary_content = base64.b64decode(read_encoded)
+    print(f"\nRead {len(binary_content)} bytes from binary.dat")
+```
+
+---
+
+## Best Practices
+
+- **Use relative paths** for portability.
+- **Check file existence** before reading or overwriting.
+- **Use specific glob patterns** in `search_files` for performance.
+- **Process search results programmatically** to identify relevant files.
+- **Handle binary files** with encoding/decoding as shown above.
+
+---
+
+## More Advanced Usage
+
+You can combine file operations with the `code()` and `code_headless()` methods for AI-powered code editing. See the [AI Coding](./ai-coding) page for details.

@@ -1,0 +1,73 @@
+---
+title: 'Git Integration'
+description: 'Track code changes with Git integration'
+---
+
+# Git Integration
+
+The Local SDK can integrate with Git to track changes, generate diffs, and make it easier to review and manage AI-assisted code modifications.
+
+**Most importantly, enabling Git integration gives the AI coding assistant (especially in architect mode) much better context about your entire repository and project.**
+
+When Git is enabled, the assistant can:
+- See the full project structure, history, and relationships between files
+- Understand which files are tracked, ignored, or recently changed
+- Use commit history and diffs to make smarter, safer edits
+- Plan and coordinate multi-file changes more reliably in architect mode
+
+## Enabling Git Integration
+
+When initializing the Local SDK, set the `use_git` parameter to `True`:
+
+```python
+from cloudcode import Local
+import os
+
+sdk = Local(
+    working_dir="/path/to/your/git/repo",
+    model="gpt-4.1-nano",
+    api_key=os.getenv("CLOUDCODE_API_KEY"),
+    use_git=True  # Enable Git integration
+)
+```
+
+When Git integration is enabled:
+- Your working directory must be within a Git repository
+- Changes made by the AI will be automatically staged but not committed
+- The `diff` returned by the `code()` method will contain a Git-formatted diff
+- You can easily review, commit, or revert changes using standard Git commands
+- **The AI assistant will have a much deeper understanding of your project context, leading to higher quality and safer code changes.**
+
+
+## Examples
+
+### Basic Usage
+
+```python
+from cloudcode import Local
+import os
+import subprocess
+
+sdk = Local(
+    working_dir="/path/to/your/git/repo",
+    api_key=os.getenv("CLOUDCODE_API_KEY"),
+    use_git=True
+)
+
+# Modify code with AI
+result = sdk.code(
+    prompt="Add input validation to the user registration function",
+    editable_files=["src/auth.py"]
+)
+
+if result["success"]:
+    print("Changes made and staged in Git:")
+    print(result["diff"])
+
+    # Commit the changes
+    commit_message = "Add input validation to user registration"
+    subprocess.run(["git", "commit", "-m", commit_message], cwd=sdk.working_dir)
+    print(f"Changes committed: {commit_message}")
+else:
+    print("No significant changes were made.")
+```
