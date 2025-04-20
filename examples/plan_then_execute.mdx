@@ -1,0 +1,77 @@
+---
+title: Plan Then Execute
+description: "How to use Cloud Code SDK for a two-step AI coding workflow: planning and execution."
+---
+
+This example demonstrates how to use the Cloud Code SDK in a two-step workflow:
+
+1. **Planning phase** – The AI analyzes the codebase and creates a detailed plan in a markdown file.
+2. **Execution phase** – The AI reads the plan and executes it to accomplish the user's goal.
+
+This approach is useful for complex tasks that benefit from high-level planning before implementation.
+
+### Example: [`plan_then_excecute.py`](https://github.com/LMSystems-ai/cloud-coding/blob/main/examples/plan_then_excecute.py)
+
+```python
+from cloudcode import Local
+import os
+
+# Initialize the SDK with your project directory and API keys
+# This must be a git repository if use_git=True (default)
+sdk = Local(
+    working_dir="/Users/seansullivan/with-supabase-app/",
+    model="o4-mini",  # Optional: specify model
+    editor_model="gpt-4.1",  # Optional: specify editor model
+    architect_mode=True,
+    use_git=True,
+    api_key=os.getenv("CLOUD_CODE_API_KEY")
+)
+
+# User's goal/task
+user_goal = f"""
+add a folder to this website which allows me to create files underneath it, each being it's own page. impelement boilerplate
+tehnical documentation components for a python sdk package which we're showcasing in these pages.
+"""
+
+# Step 1: Planning Phase
+# The AI will analyze the codebase and create a detailed plan in a markdown file
+planning_result = sdk.code(
+    prompt=f"Analyze the codebase to create a detailed plan for this task: {user_goal}. "
+           f"Write a comprehensive plan to the file 'plan.md'. "
+           f"The plan MUST be written directly to the plan.md file, not just displayed. "
+           f"Include the high level goal, steps, file analysis, and implementation details.",
+    editable_files=["plan.md"],
+    readonly_files=[]
+)
+
+# Check if the planning was successful
+if planning_result["success"]:
+    print("Planning phase completed successfully!")
+    print("Plan created:")
+    print(planning_result["diff"])
+
+    # Step 2: Execution Phase
+    # The AI will read the plan and execute the actual task
+    execution_result = sdk.code(
+        prompt=f"Read the plan in 'plan.md' and execute it to accomplish this task: {user_goal}. "
+               f"Follow the plan step by step to make the necessary changes.",
+        editable_files=[],
+        readonly_files=["plan.md"]
+    )
+
+    # Check if the execution was successful
+    if execution_result["success"]:
+        print("\nExecution phase completed successfully!")
+        print("Changes made:")
+        print(execution_result["diff"])
+    else:
+        print("\nExecution phase failed or made no meaningful changes.")
+
+else:
+    print("Planning phase failed or made no meaningful plan.")
+    print("Please review and try again.")
+```
+
+> **Note:**
+> - This example uses architect mode to leverage both a planner and an editor model for the task.
+> - Make sure to set your `CLOUD_CODE_API_KEY` environment variable before running.

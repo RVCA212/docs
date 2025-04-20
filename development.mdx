@@ -33,7 +33,7 @@ print(result["diff"])
 ```
 
 ## Tracking Costs and Credits
-Easily monitor your API usage (excerpt from `architect.py`):
+Easily monitor your API usage (excerpt from [Architect Example]()):
 ```python
 cost_history = sdk.get_cost_history()
 for entry in cost_history:
@@ -44,7 +44,7 @@ print(f"Total cost: ${totals['total_cost']:.2f}")
 ```
 
 ## Asynchronous Tasks (Headless)
-Run long-running tasks without blocking your application (see `headless_example copy.py`):
+Run long-running tasks without blocking your application (see [Headless Mode](/local-sdk/headless)):
 ```python
 task = sdk.code_headless(
     prompt="Refactor large codebase to modern patterns",

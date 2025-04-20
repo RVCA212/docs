@@ -1,0 +1,136 @@
+---
+title: LangGraph Sandbox Example
+description: "How to use the Cloud Code SDK with LangGraph to build an AI coding agent in a sandbox environment."
+---
+
+This example demonstrates how to use the Cloud Code SDK together with LangGraph to build an AI coding agent that can create, read, search, and edit files in a sandbox environment. The agent uses a ReAct-style loop and exposes tools for file management and code editing.
+
+### Example: `sandbox.py`
+
+```python
+import os
+import json
+import sys
+from typing import Any, Dict, List, Optional, Annotated, Sequence
+from typing_extensions import TypedDict
+
+from langchain.chat_models import init_chat_model
+from langchain_core.messages import BaseMessage, SystemMessage, ToolMessage
+from langchain_core.runnables import RunnableConfig
+from langgraph.graph import StateGraph, END
+from langgraph.graph.message import add_messages
+
+# Import Cloud Code Sandbox SDK
+from cloudcode import SandboxSDK
+
+# Define the agent state
+class AgentState(TypedDict):
+    messages: Annotated[Sequence[BaseMessage], add_messages]
+    sandbox_id: Optional[str]
+    working_dir: str
+    sdk: Optional[Any]
+
+DEFAULT_WORKING_DIR = "/home/user"
+DEFAULT_SANDBOX_TIMEOUT = 300  # 5 minutes
+
+def initialize_sandbox(state: AgentState) -> AgentState:
+    sdk = SandboxSDK(
+        model="gpt-4.1",
+        api_key=os.getenv("CLOUD_CODE_API_KEY"),
+        sandbox_timeout=DEFAULT_SANDBOX_TIMEOUT,
+        user_id="react-agent-user"
+    )
+    sandbox_info = sdk.get_sandbox_info()
+    state["sdk"] = sdk
+    state["sandbox_id"] = sandbox_info["sandbox_id"]
+    state["working_dir"] = sdk.working_dir
+    sdk.create_file(
+        "hello.py",
+        """def greet(name):
+    return f\"Hello, {name}!\"
+
+if __name__ == "__main__":
+    print(greet("World"))
+"""
+    )
+    return state
+
+def cleanup_sandbox(state: AgentState) -> Dict:
+    if state.get("sdk"):
+        return state["sdk"].kill_sandbox()
+    return {"success": False, "message": "No sandbox to terminate"}
+
+# Tool functions for the agent
+# ... (see full code for details)
+
+# Define the tools list and create a lookup dictionary by name
+# ...
+
+# Initialize the language model and bind tools
+# ...
+
+# Define the tool node for the react agent
+# ...
+
+# Define the node that calls the model
+# ...
+
+# Define the conditional edge that determines whether to continue or not
+# ...
+
+# Create the react agent graph
+# ...
+
+# Create the agent
+# ...
+
+if __name__ == "__main__":
+    # Initialize state
+    state = {
+        "messages": [],
+        "working_dir": DEFAULT_WORKING_DIR,
+        "sandbox_id": None,
+        "sdk": None
+    }
+    try:
+        # Initialize the sandbox
+        try:
+            state = initialize_sandbox(state)
+            print(f"🚀 LangGraph Sandbox App initialized with:")
+            print(f"   - Sandbox ID: {state['sandbox_id']}")
+            print(f"   - Working directory: {state['working_dir']}")
+            print(f"   - Model: gpt-4.1")
+        except Exception as e:
+            print(f"❌ Failed to initialize sandbox: {str(e)}")
+            print("Please check your CLOUD_CODE_API_KEY environment variable.")
+            sys.exit(1)
+        print("\nEnter your coding request (or 'quit' to exit):")
+        while True:
+            user_input = input("\n> ")
+            if user_input.lower() in ("quit", "exit", "q"):
+                break
+            messages = [{"role": "user", "content": user_input}]
+            print("\nProcessing your request...\n")
+            # Stream the agent's response
+            for step in agent.stream(
+                {"messages": messages, **state},
+                stream_mode=["messages"],
+                config={"configurable": {"thread_id": 1}},
+            ):
+                if "messages" in step:
+                    content = step["messages"][-1].content
+                    if content:
+                        print(content, end="")
+    finally:
+        # Clean up sandbox
+        if state.get("sdk"):
+            print("\nCleaning up sandbox...")
+            result = cleanup_sandbox(state)
+            print(f"Sandbox termination: {result['message']}")
+            print(f"Termination success: {result['success']}")
+```
+
+> **Note:**
+> - This example demonstrates how to build a ReAct-style AI coding agent using LangGraph and the Cloud Code SDK in a sandbox environment.
+> - You must set your `CLOUD_CODE_API_KEY` environment variable before running.
+> - The agent exposes tools for file creation, reading, searching, code editing, and running shell commands.

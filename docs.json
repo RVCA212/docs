@@ -18,7 +18,8 @@
             "pages": [
               "introduction",
               "quickstart",
-              "development"
+              "development",
+              "pricing"
             ]
           }
         ]
@@ -43,6 +44,17 @@
               "local-sdk/headless",
               "local-sdk/git-integration"
             ]
+          },
+          {
+            "group": "Examples",
+            "pages": [
+              "examples/architect",
+              "examples/basic",
+              "examples/add_comments",
+              "examples/plan_then_execute",
+              "examples/cost_tracking_example",
+              "examples/langgraph_react_agent"
+            ]
           }
         ]
       },
@@ -64,6 +76,15 @@
               "sandbox-sdk/ai-coding",
               "sandbox-sdk/management"
             ]
+          },
+          {
+            "group": "Examples",
+            "pages": [
+              "examples/sandbox_example",
+              "examples/langgraph_sandbox",
+              "examples/github_agent",
+              "examples/cost_track_sandbox"
+            ]
           }
         ]
       }
@@ -74,7 +95,12 @@
     "dark": "/logo/dark.svg"
   },
   "navbar": {
-    "links": [],
+    "links": [
+      {
+        "label": "GitHub",
+        "href": "https://github.com/LMSystems-ai/cloud-coding"
+      }
+    ],
     "primary": {
       "type": "button",
       "label": "Dashboard",
