@@ -49,10 +49,7 @@ from cloudcode import SandboxSDK
 
 sdk = SandboxSDK(
     model="gpt-4.1",
-    api_keys={
-        "openai": "your_openai_key",
-        "anthropic": "your_anthropic_key"
-    }
+    api_key=os.getenv("CLOUD_CODE_API_KEY")
 )
 ```
 

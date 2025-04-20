@@ -64,10 +64,7 @@ from cloudcode import Local
 
 sdk = Local(
     working_dir="/path/to/your/project",
-    api_keys={
-        "openai": "your_openai_key",
-        "anthropic": "your_anthropic_key"
-    }
+    api_key=os.getenv("CLOUD_CODE_API_KEY")
 )
 ```
 

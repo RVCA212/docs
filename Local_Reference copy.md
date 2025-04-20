@@ -41,10 +41,6 @@ class Local:
 - **api_key** (`str`, optional)
   Your cloudcode (Aider backend) API key. If provided, the SDK will authenticate against cloudcode, fetch provider keys, and enable credit tracking.
 
-- **api_keys** (`Dict[str,str]`, optional)
-  Legacy method: supply provider API keys directly, e.g. `{"openai": "sk-...", "anthropic": "ak-..."}`.
-  Only `OPENAI_API_KEY` and `ANTHROPIC_API_KEY` are recognized.
-
 - **architect_mode** (`bool`, default=`False`)
   Enables a two-model “planner + editor” workflow.
   Planner uses `weak_model` (or `model`), and editor uses `editor_model` (or `model`).
