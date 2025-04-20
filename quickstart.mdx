@@ -52,42 +52,50 @@ Get started with cloudcode SDK in just a few simple steps.
 
 ### Local SDK
 
-The Local SDK provides AI-assisted coding in your local environment:
+The Local SDK provides AI coding in your local environment:
 
 ```python
 from cloudcode import Local
 import os
 
-# Initialize the SDK
+cwd = os.getcwd()
+
+# Initialize the SDK with your project directory and API keys
+# This must be a git repository if use_git=True (default)
 sdk = Local(
-    working_dir="/path/to/your/project",
-    model="gpt-4.1-nano",  # Choose your preferred AI model
-    api_key=os.getenv("CLOUDCODE_API_KEY"),
-    use_git=True  # Optional: Enable Git integration for tracking changes
+    working_dir=cwd,
+    api_key=os.getenv("CLOUD_CODE_API_KEY")
 )
 
-# Create a file
+# Create a new file with content
 sdk.create_file(
-    "calculator.py",
+    "src/calculator.py", # specify file path
     """def add(a, b):
     return a + b
+
+def subtract(a, b):
+    return a - b
 """
 )
 
-# Improve the code with AI
+# Run an AI coding task to improve the calculator
 result = sdk.code(
-    prompt="Add subtract, multiply, and divide functions to the calculator",
-    editable_files=["calculator.py"]
+    prompt="Add a multiply and divide function to the calculator.py file. Make sure to handle division by zero in the divide function.",
+    editable_files=["src/calculator.py"],
+    readonly_files=[]
 )
 
+# Check if the operation was successful
 if result["success"]:
-    print("Changes applied successfully!")
-    print(result["diff"])  # View the Git diff or description of changes
+    print("Coding task was successful!")
+    print("Changes made:")
+    print(result["diff"])
+else:
+    print("Coding task failed or made no meaningful changes.")
 
-    # Check the cost of this operation
-    cost = result["cost"]
-    print(f"Operation cost: ${cost['message_cost']:.4f}")
-    print(f"Credits remaining: {result['credits_remaining']}")
+# To check what content is now in the file after the AI changes
+updated_content = sdk.read_file("src/calculator.py")
+print("Updated file content:", updated_content)
 ```
 
 ### Sandbox SDK
@@ -102,7 +110,7 @@ import os
 sdk = SandboxSDK(
     model="gpt-4.1",
     api_key=os.getenv("CLOUDCODE_API_KEY"),
-    sandbox_timeout=600  # 10 minutes (in seconds)
+    sandbox_timeout=180  # 3 minutes (in seconds)
 )
 
 # Check sandbox info
