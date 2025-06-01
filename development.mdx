@@ -95,33 +95,6 @@ curl -X POST "https://api.cloudcoding.ai/invoke" \
   }'
 ```
 
-#### Batch Processing
-Process multiple repositories efficiently:
-
-```bash
-#!/bin/bash
-
-REPOS=(
-  "https://github.com/user/repo1"
-  "https://github.com/user/repo2"
-  "https://github.com/user/repo3"
-)
-
-for repo in "${REPOS[@]}"; do
-  echo "Processing $repo..."
-  curl -X POST "https://api.cloudcoding.ai/invoke" \
-    -H "Content-Type: application/json" \
-    -H "x-api-key: $CLOUDCODING_API_KEY" \
-    -d "{
-      \"repo_url\": \"$repo\",
-      \"github_token\": \"$GITHUB_TOKEN\",
-      \"branch\": \"main\",
-      \"variables\": {
-        \"query\": \"Add comprehensive JSDoc comments to all functions\"
-      }
-    }"
-done
-```
 
 ## Response Types
 
@@ -223,32 +196,6 @@ curl -X POST "https://api.cloudcoding.ai/invoke" \
     }
   }'
 ```
-
-## Best Practices
-
-### 1. Use Descriptive Branches
-```bash
-# Create feature branches for AI changes
-git checkout -b ai/add-error-handling
-# Then specify this branch in your API call
-```
-
-### 2. Provide Context in Queries
-```json
-{
-  "variables": {
-    "query": "Add comprehensive error handling to the user authentication system. Focus on the login, signup, and password reset flows. Ensure all errors are properly logged and user-friendly messages are displayed."
-  }
-}
-```
-
-### 3. Monitor Usage
-Track your API usage and costs by monitoring the response data and your Anthropic bill.
-
-### 4. Secure Your Keys
-- Never commit API keys to version control
-- Use environment variables or secure secret management
-- Rotate keys regularly
 
 ## Integration Examples
 
