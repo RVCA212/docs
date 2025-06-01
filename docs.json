@@ -36,12 +36,6 @@
     "dark": "/logo/dark.svg"
   },
   "navbar": {
-    "links": [
-      {
-        "label": "GitHub",
-        "href": "https://github.com/LMSystems-ai/cloud-coding"
-      }
-    ],
     "primary": {
       "type": "button",
       "label": "Dashboard",
@@ -51,7 +45,7 @@
   "footer": {
     "socials": {
       "x": "https://x.com/LM_SYS",
-      "github": "https://github.com/LMSystems-ai/cloud-coding"
+      "github": "https://github.com/RVCA212"
     }
   }
 }
