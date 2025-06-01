@@ -1,0 +1,515 @@
+---
+title: 'Custom Templates Overview'
+description: 'Complete control over AI agent behavior with custom message workflows'
+---
+
+# Script Your AI Agent with Custom Messages
+
+Transform how you use Cloud Coding API by **scripting your AI agent's exact behavior**. Custom messages let you define precise conversation flows, control tool usage, and create powerful development workflows that adapt to your specific needs.
+
+## Quick Start
+
+Instead of using pre-built templates, define your own workflow:
+
+```json
+{
+  "messages": [
+    {
+      "tools": "all",
+      "content": "Add TypeScript support to this React project"
+    }
+  ],
+  "repo_url": "https://github.com/username/my-project",
+  "github_token": "ghp_...",
+  "branch": "main",
+  "haiku": true
+}
+```
+
+<Info>
+This simple example shows the power of custom messages - you get the same AI capabilities with complete control over the conversation flow.
+</Info>
+
+## Why Custom Messages?
+
+| Traditional Templates | Custom Messages |
+|----------------------|-----------------|
+| ❌ Fixed workflows | ✅ Script any workflow |
+| ❌ Limited tool control | ✅ Choose tools per step |
+| ❌ No environment setup | ✅ Run custom Python code |
+| ❌ Single conversation | ✅ Multi-step conversations |
+| ❌ Repository-wide scope | ✅ Directory-focused work |
+
+## Message Structure
+
+Every message supports these fields:
+
+```json
+{
+  "content": "Your instruction for the AI agent",
+  "tools": "all",                    // or ["Read", "Edit", "Bash"]
+  "continueConversation": true,      // Continue previous context
+  "workingDir": "./src/components",  // Focus on specific directory
+  "customInitCode": "print('Hello')" // Python code before AI starts
+}
+```
+
+## Progressive Examples
+
+### Level 1: Single Task
+
+Start with simple, focused tasks:
+
+```bash
+curl -X POST "https://api.cloudcoding.ai/invoke" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: your_api_key" \
+  -d '{
+    "messages": [
+      {
+        "tools": "all",
+        "content": "Add comprehensive error handling to all API endpoints"
+      }
+    ],
+    "repo_url": "https://github.com/username/api-project",
+    "github_token": "ghp_...",
+    "branch": "error-handling",
+    "haiku": true
+  }'
+```
+
+### Level 2: Multi-Step Workflow
+
+Chain related tasks together:
+
+```bash
+curl -X POST "https://api.cloudcoding.ai/invoke" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: your_api_key" \
+  -d '{
+    "messages": [
+      {
+        "tools": "all",
+        "content": "Analyze the current test coverage and identify untested code"
+      },
+      {
+        "tools": "all",
+        "content": "Add comprehensive unit tests for all untested functions",
+        "continueConversation": true
+      },
+      {
+        "tools": ["Bash"],
+        "content": "Run the test suite and ensure all tests pass",
+        "continueConversation": true
+      }
+    ],
+    "repo_url": "https://github.com/username/testing-project",
+    "github_token": "ghp_...",
+    "branch": "comprehensive-testing",
+    "haiku": true
+  }'
+```
+
+### Level 3: Tool-Controlled Workflow
+
+Precisely control which tools are used at each step:
+
+```bash
+curl -X POST "https://api.cloudcoding.ai/invoke" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: your_api_key" \
+  -d '{
+    "messages": [
+      {
+        "tools": ["Read", "LS", "Grep"],
+        "content": "Explore the codebase structure and understand the authentication system"
+      },
+      {
+        "tools": ["Edit", "Write"],
+        "content": "Refactor the authentication to use modern security practices",
+        "continueConversation": true
+      },
+      {
+        "tools": ["Bash"],
+        "content": "Test the updated authentication system",
+        "continueConversation": true
+      }
+    ],
+    "repo_url": "https://github.com/username/secure-app",
+    "github_token": "ghp_...",
+    "branch": "auth-security-update",
+    "haiku": false
+  }'
+```
+
+### Level 4: Custom Environment Setup
+
+Run your own Python code before the AI agent starts:
+
+```bash
+curl -X POST "https://api.cloudcoding.ai/invoke" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: your_api_key" \
+  -d '{
+    "messages": [
+      {
+        "tools": "all",
+        "content": "Set up a CI/CD pipeline for this project",
+        "customInitCode": "import datetime\nimport os\n\n# Setup logging\nstart_time = datetime.datetime.now()\nprint(f\"🚀 CI/CD setup started at {start_time}\")\n\n# Check environment\nprint(f\"Working directory: {os.getcwd()}\")\n\n# Helper functions\ndef log_step(step):\n    elapsed = datetime.datetime.now() - start_time\n    print(f\"⏱️  [{elapsed}] {step}\")\n\nlog_step(\"Environment validation complete\")"
+      }
+    ],
+    "repo_url": "https://github.com/username/deployment-project",
+    "github_token": "ghp_...",
+    "branch": "cicd-setup",
+    "haiku": false
+  }'
+```
+
+### Level 5: Directory-Focused Development
+
+Focus the agent on specific parts of your codebase:
+
+```bash
+curl -X POST "https://api.cloudcoding.ai/invoke" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: your_api_key" \
+  -d '{
+    "messages": [
+      {
+        "tools": "all",
+        "content": "Convert all React components to TypeScript with proper prop types",
+        "workingDir": "./src/components"
+      },
+      {
+        "tools": "all",
+        "content": "Update the custom hooks to use TypeScript interfaces",
+        "workingDir": "./src/hooks",
+        "continueConversation": true
+      },
+      {
+        "tools": "all",
+        "content": "Add TypeScript types to the utility functions",
+        "workingDir": "./src/utils",
+        "continueConversation": true
+      }
+    ],
+    "repo_url": "https://github.com/username/typescript-migration",
+    "github_token": "ghp_...",
+    "branch": "typescript-conversion",
+    "haiku": false
+  }'
+```
+
+## Available Tools
+
+Based on the actual system capabilities, you can specify these tools:
+
+| Tool | Purpose | Use When |
+|------|---------|----------|
+| `"all"` | All available tools | Most scenarios (recommended) |
+| `"Task"` | Task management and planning | Project planning and organization |
+| `"Bash"` | Execute shell commands | Running tests, builds, deployments |
+| `"Glob"` | File pattern matching | Finding files with specific patterns |
+| `"Grep"` | Text search and matching | Searching for code patterns |
+| `"LS"` | Directory listing | Exploring project structure |
+| `"Read"` | Read file contents | Understanding existing code |
+| `"Edit"` | Edit existing files | Modifying code |
+| `"MultiEdit"` | Edit multiple files | Large refactoring tasks |
+| `"Write"` | Create new files | Adding new components/modules |
+| `"NotebookRead"` | Read Jupyter notebooks | Data science projects |
+| `"NotebookEdit"` | Edit Jupyter notebooks | Data science workflows |
+| `"WebFetch"` | Fetch web content | Getting external documentation |
+| `"TodoRead"` | Read todo lists | Project management |
+| `"TodoWrite"` | Manage todo lists | Task tracking |
+| `"WebSearch"` | Search the web | Finding solutions and documentation |
+
+## Real-World Workflow Patterns
+
+### Feature Development Workflow
+
+Complete feature implementation from planning to deployment:
+
+```json
+{
+  "messages": [
+    {
+      "tools": ["Read", "LS", "Task"],
+      "content": "Analyze the current codebase and create a detailed plan for implementing user profiles with avatars, preferences, and activity history."
+    },
+    {
+      "tools": ["Write", "Edit"],
+      "content": "Implement the backend API endpoints for user profiles according to the plan",
+      "workingDir": "./backend",
+      "continueConversation": true
+    },
+    {
+      "tools": ["Write", "Edit"],
+      "content": "Create the frontend components for user profile management",
+      "workingDir": "./frontend/src/components",
+      "continueConversation": true
+    },
+    {
+      "tools": ["Write", "Bash"],
+      "content": "Add comprehensive tests and run the test suite",
+      "continueConversation": true
+    }
+  ],
+  "haiku": false
+}
+```
+
+### Security Audit Workflow
+
+Comprehensive security review and fixes:
+
+```json
+{
+  "messages": [
+    {
+      "tools": ["Read", "Grep", "WebSearch"],
+      "content": "Conduct a thorough security audit of this application, checking for common vulnerabilities like SQL injection, XSS, CSRF, and insecure authentication",
+      "customInitCode": "import datetime\n\naudit_start = datetime.datetime.now()\nprint(f\"🔒 Security audit started at {audit_start}\")\n\nvulnerabilities = []\n\ndef log_vulnerability(vuln_type, file, severity):\n    vulnerabilities.append({\n        'type': vuln_type,\n        'file': file,\n        'severity': severity,\n        'timestamp': datetime.datetime.now()\n    })\n    print(f\"⚠️  {severity.upper()}: {vuln_type} in {file}\")"
+    },
+    {
+      "tools": ["Edit", "Write"],
+      "content": "Fix all identified security vulnerabilities and implement security best practices",
+      "continueConversation": true
+    },
+    {
+      "tools": ["Bash", "WebSearch"],
+      "content": "Run security tests and validate that all vulnerabilities have been resolved",
+      "continueConversation": true
+    }
+  ],
+  "haiku": false
+}
+```
+
+### Code Migration Workflow
+
+Large-scale code transformations:
+
+```json
+{
+  "messages": [
+    {
+      "tools": ["Read", "LS", "Grep"],
+      "content": "Analyze the entire JavaScript codebase and create a comprehensive migration strategy for converting to TypeScript. Identify dependencies, type challenges, and migration priorities."
+    },
+    {
+      "tools": ["Edit", "Write"],
+      "content": "Start with utility functions and shared modules - convert them to TypeScript with proper type definitions",
+      "workingDir": "./src/utils",
+      "continueConversation": true
+    },
+    {
+      "tools": ["Edit", "Write"],
+      "content": "Convert React components to TypeScript with proper prop interfaces and state types",
+      "workingDir": "./src/components",
+      "continueConversation": true
+    },
+    {
+      "tools": ["Bash"],
+      "content": "Run TypeScript compiler, fix any type errors, and ensure the build passes",
+      "continueConversation": true
+    }
+  ],
+  "haiku": false
+}
+```
+
+## Advanced Features
+
+### Custom Python Code Execution
+
+The `customInitCode` field allows you to run Python code before the AI agent starts:
+
+```json
+{
+  "customInitCode": "import subprocess\nimport json\nimport os\n\n# Environment validation\nnode_version = subprocess.run(['node', '--version'], capture_output=True, text=True)\nprint(f'Node.js version: {node_version.stdout.strip()}')\n\n# Project configuration\nproject_config = {\n    'framework': 'React',\n    'typescript': True,\n    'testing': 'Jest'\n}\nprint(f'Project configuration: {json.dumps(project_config, indent=2)}')\n\n# Helper functions\ndef validate_file_exists(filepath):\n    if os.path.exists(filepath):\n        print(f'✅ {filepath} exists')\n        return True\n    else:\n        print(f'❌ {filepath} not found')\n        return False\n\n# Setup complete\nprint('🚀 Custom environment setup complete')"
+}
+```
+
+**Common Use Cases:**
+- Environment validation and setup
+- Helper function definitions
+- Logging and monitoring setup
+- Configuration loading
+- Pre-execution checks
+
+### Conversation Continuity
+
+Use `continueConversation: true` to maintain context across messages:
+
+```json
+{
+  "messages": [
+    {
+      "content": "Create a comprehensive user authentication system with JWT tokens"
+    },
+    {
+      "content": "Now add password reset functionality to the authentication system we just created",
+      "continueConversation": true
+    },
+    {
+      "content": "Finally, implement two-factor authentication as an additional security layer",
+      "continueConversation": true
+    }
+  ]
+}
+```
+
+### Directory Scoping
+
+Use `workingDir` to focus the agent on specific parts of your repository:
+
+```json
+{
+  "messages": [
+    {
+      "content": "Optimize all database queries in this directory",
+      "workingDir": "./backend/database"
+    },
+    {
+      "content": "Update the API routes to use the optimized queries",
+      "workingDir": "./backend/routes",
+      "continueConversation": true
+    }
+  ]
+}
+```
+
+## Best Practices
+
+### 1. Start Simple, Build Complexity
+```json
+{
+  "messages": [
+    {
+      "content": "Add basic user authentication to this app"
+    }
+  ]
+}
+```
+
+Then evolve to:
+```json
+{
+  "messages": [
+    {
+      "content": "Plan a comprehensive authentication system with JWT, refresh tokens, and social login"
+    },
+    {
+      "content": "Implement the planned authentication system",
+      "continueConversation": true
+    },
+    {
+      "content": "Add comprehensive tests for all authentication flows",
+      "continueConversation": true
+    }
+  ]
+}
+```
+
+### 2. Use Descriptive Instructions
+❌ Vague: `"Fix the code"`
+✅ Specific: `"Add error handling to all API endpoints, including proper HTTP status codes and user-friendly error messages"`
+
+### 3. Strategic Tool Selection
+```json
+{
+  "tools": ["Read", "LS"],
+  "content": "Analyze the code architecture without making changes"
+}
+```
+
+### 4. Leverage Working Directories
+```json
+{
+  "workingDir": "./src/components",
+  "content": "Focus only on React components for this refactoring"
+}
+```
+
+### 5. Environment Validation
+```json
+{
+  "customInitCode": "import subprocess\n\n# Validate required tools\ntools = ['node', 'npm', 'git']\nfor tool in tools:\n    result = subprocess.run([tool, '--version'], capture_output=True)\n    if result.returncode == 0:\n        print(f'✅ {tool} available')\n    else:\n        print(f'❌ {tool} not found')"
+}
+```
+
+## Python Integration
+
+```python
+import requests
+import json
+
+def create_custom_workflow(api_key, messages, repo_url, github_token, branch="main"):
+    """
+    Execute a custom message workflow.
+    """
+    url = "https://api.cloudcoding.ai/invoke"
+    headers = {
+        "Content-Type": "application/json",
+        "x-api-key": api_key
+    }
+
+    payload = {
+        "messages": messages,
+        "repo_url": repo_url,
+        "github_token": github_token,
+        "branch": branch,
+        "haiku": True
+    }
+
+    response = requests.post(url, headers=headers, json=payload, stream=True)
+
+    for line in response.iter_lines():
+        if line.startswith(b'data: '):
+            try:
+                data = json.loads(line[6:])
+                yield data
+            except json.JSONDecodeError:
+                continue
+
+# Example usage
+messages = [
+    {
+        "tools": "all",
+        "content": "Add comprehensive error handling and logging to this application"
+    },
+    {
+        "tools": ["Bash"],
+        "content": "Run tests to ensure error handling works correctly",
+        "continueConversation": True
+    }
+]
+
+for event in create_custom_workflow("your_api_key", messages, "https://github.com/user/repo", "ghp_token"):
+    print(f"Event: {event}")
+```
+
+## Common Patterns Summary
+
+| Pattern | Use Case | Example |
+|---------|----------|---------|
+| **Single Message** | Simple tasks | Add dark mode toggle |
+| **Multi-Step** | Related task sequence | Plan → Implement → Test |
+| **Tool-Controlled** | Specific operations | Read-only analysis, then editing |
+| **Environment Setup** | Custom initialization | Logging, validation, helpers |
+| **Directory-Focused** | Large codebase work | Component-by-component migration |
+
+## Next Steps
+
+Ready to build your first custom workflow? Start with:
+
+1. **Simple single message** - Get comfortable with the basic structure
+2. **Add conversation flow** - Try `continueConversation: true`
+3. **Control tools** - Specify exact tools for each step
+4. **Custom environment** - Add your own Python initialization
+5. **Complex workflows** - Combine all features for powerful automation
+
+<Card title="Pro Tip" icon="lightbulb">
+Custom messages give you the power to script any development workflow. Start simple and gradually build more sophisticated automation as you learn the patterns.
+</Card>
+
