@@ -47,5 +47,13 @@
       "x": "https://x.com/LM_SYS",
       "github": "https://github.com/RVCA212"
     }
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude"
+    ]
   }
 }
