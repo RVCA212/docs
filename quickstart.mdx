@@ -1,180 +1,172 @@
 ---
 title: 'Quickstart'
-description: 'Get started with cloudcode SDK in minutes'
+description: 'Get started with Cloud Coding API in minutes'
 ---
 
-## Installation
+## Setup
 
-Get started with cloudcode SDK in just a few simple steps.
+Get started with the Cloud Coding API in just a few simple steps.
 
 <AccordionGroup>
-  <Accordion icon="terminal" title="Install via pip">
-    Install the cloudcode SDK using pip:
+  <Accordion icon="key" title="Get your API keys">
+    You'll need two API keys to use Cloud Coding:
 
-    ```bash
-    pip install cloudcode
-    ```
+    1. **Cloud Coding API Key**: Get this from [cloudcoding.ai/home](https://cloudcoding.ai/home)
+    2. **GitHub Token**: Create a personal access token at [github.com/settings/tokens](https://github.com/settings/tokens)
+    3. **Anthropic API Key**: Get from [console.anthropic.com](https://console.anthropic.com) or set in your dashboard
 
-    This will install both the Local and Sandbox components of the SDK.
-  </Accordion>
-
-  <Accordion icon="key" title="Set up API keys">
-    To use the SDK, you'll need the appropriate API keys:
-
-    ```python
-    import os
-
-    # Set environment variables for your API keys
-    os.environ["CLOUDCODE_API_KEY"] = "your_cloudcode_api_key"
-
-    # Alternatively, you can pass them directly to the SDK
-    from cloudcode import Local
-
-    sdk = Local(
-        working_dir="/path/to/your/project",
-        api_key="your_cloudcode_api_key"
-    )
-    ```
     <Note>
-      Using the cloudcode API key is recommended as it handles provider keys automatically.
-      For direct provider access, you can also use:
-      ```python
-      sdk = Local(
-          working_dir="/path/to/your/project",
-          api_key=os.getenv("CLOUD_CODE_API_KEY")
-      )
-      ```
+      You can set your Anthropic API key in the dashboard at [cloudcoding.ai/home](https://cloudcoding.ai/home) or pass it directly in API calls.
     </Note>
   </Accordion>
 </AccordionGroup>
 
+## API Reference
+
+### Endpoint
+```
+POST https://api.cloudcoding.ai/invoke
+```
+
+### Headers
+```
+Content-Type: application/json
+x-api-key: YOUR_CLOUDCODING_API_KEY
+```
+
+### Request Body
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `repo_url` | string | ✅ | GitHub repository URL |
+| `github_token` | string | ✅ | Your GitHub personal access token |
+| `branch` | string | ✅ | Branch name to work on |
+| `variables` | object | ✅ | Template variables (see templates) |
+| `haiku` | boolean | ❌ | Use Claude Haiku instead of Sonnet (default: false) |
+| `template_id` | string | ❌ | Template ID (default: Chat template) |
+| `working_dir` | string | ❌ | Directory to mount after cloning |
+| `ant_api_key` | string | ❌ | Anthropic API key (if not set in dashboard) |
+
+### Response Format
+
+The API returns streaming JSON responses with different message types:
+
+```json
+data: {"auth": "Authenticated Successfully!"}
+data: {"setup": {"messages": [...], "repo_url": "...", "branch": "main"}}
+data: {"executor": [...]}
+data: {"push": "changes successfully pushed to main"}
+```
+
 ## Quick Examples
 
-### Local SDK
+### Basic Code Analysis
 
-The Local SDK provides AI coding in your local environment:
+Analyze any repository to understand what it's about:
 
-```python
-from cloudcode import Local
-import os
-
-cwd = os.getcwd()
-
-# Initialize the SDK with your project directory and API keys
-# This must be a git repository if use_git=True (default)
-sdk = Local(
-    working_dir=cwd,
-    api_key=os.getenv("CLOUD_CODE_API_KEY")
-)
-
-# Create a new file with content
-sdk.create_file(
-    "src/calculator.py", # specify file path
-    """def add(a, b):
-    return a + b
-
-def subtract(a, b):
-    return a - b
-"""
-)
-
-# Run an AI coding task to improve the calculator
-result = sdk.code(
-    prompt="Add a multiply and divide function to the calculator.py file. Make sure to handle division by zero in the divide function.",
-    editable_files=["src/calculator.py"],
-    readonly_files=[]
-)
-
-# Check if the operation was successful
-if result["success"]:
-    print("Coding task was successful!")
-    print("Changes made:")
-    print(result["diff"])
-else:
-    print("Coding task failed or made no meaningful changes.")
-
-# To check what content is now in the file after the AI changes
-updated_content = sdk.read_file("src/calculator.py")
-print("Updated file content:", updated_content)
+```bash
+curl -X POST "https://api.cloudcoding.ai/invoke" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -d '{
+    "repo_url": "https://github.com/username/repo-name",
+    "github_token": "YOUR_GITHUB_TOKEN",
+    "branch": "main",
+    "variables": {
+      "query": "analyze the repo to see what it is about"
+    }
+  }'
 ```
 
-### Sandbox SDK
+### Add New Features
 
-The SandboxSDK allows you to run code safely in a remote environment:
+Use natural language to add functionality:
 
-```python
-from cloudcode import SandboxSDK
-import os
-
-# Initialize the SDK
-sdk = SandboxSDK(
-    model="gpt-4.1",
-    api_key=os.getenv("CLOUDCODE_API_KEY"),
-    sandbox_timeout=180  # 3 minutes (in seconds)
-)
-
-# Check sandbox info
-info = sdk.get_sandbox_info()
-print(f"Sandbox created with ID: {info['sandbox_id']}")
-print(f"Expires at: {info['end_at']}")
-
-# Create a file in the sandbox
-sdk.create_file(
-    "test.py",
-    """def add(a, b):
-    return a + b
-
-print(add(5, 3))
-"""
-)
-
-# Run the file
-result = sdk.run_command("python3 test.py")
-print(result["stdout"])  # Outputs: 8
-
-# Use AI to improve the code
-sdk.sandbox_code(
-    prompt="Add subtract and multiply functions with proper error handling",
-    editable_files=["/home/user/test.py"]
-)
-
-# Download the improved file
-sdk.download_file("/home/user/test.py", "local_test.py")
-
-# Shut down the sandbox when done
-sdk.kill_sandbox()
+```bash
+curl -X POST "https://api.cloudcoding.ai/invoke" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -d '{
+    "repo_url": "https://github.com/username/my-app",
+    "github_token": "YOUR_GITHUB_TOKEN",
+    "branch": "feature/new-component",
+    "variables": {
+      "query": "Add a dark mode toggle component to the React app"
+    }
+  }'
 ```
+
+### Plan and Execute Template
+
+For complex tasks, use the Plan and Execute template:
+
+```bash
+curl -X POST "https://api.cloudcoding.ai/invoke" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -d '{
+    "repo_url": "https://github.com/username/my-project",
+    "github_token": "YOUR_GITHUB_TOKEN",
+    "branch": "main",
+    "template_id": "a2ef2e64-40e2-4c6a-99fc-767e3a30a963",
+    "variables": {
+      "task": "Refactor the authentication system to use JWT tokens"
+    }
+  }'
+```
+
+### Use Claude Haiku (Faster/Cheaper)
+
+For simpler tasks, use the Haiku model:
+
+```bash
+curl -X POST "https://api.cloudcoding.ai/invoke" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -d '{
+    "repo_url": "https://github.com/username/docs-site",
+    "github_token": "YOUR_GITHUB_TOKEN",
+    "branch": "main",
+    "haiku": true,
+    "variables": {
+      "query": "Fix typos in the README file"
+    }
+  }'
+```
+
+## Available Templates
+
+### Chat Template (Default)
+- **Variables**: `query` (string)
+- **Use case**: Direct communication with Claude for any coding task
+
+### Plan and Execute Template
+- **Template ID**: `a2ef2e64-40e2-4c6a-99fc-767e3a30a963`
+- **Variables**: `task` (string)
+- **Use case**: Complex multi-step coding tasks that benefit from planning
+
+<Note>
+  Discover more templates at [cloudcoding.ai/templates](https://cloudcoding.ai/templates)
+</Note>
 
 ## Next Steps
 
 <CardGroup>
 
-<Card title="Local SDK Reference" icon="laptop-code" href="/local-sdk">
-  Explore the full capabilities of the Local SDK
+<Card title="Explore Templates" icon="template" href="https://cloudcoding.ai/templates">
+  Browse pre-built workflows for common coding tasks
 </Card>
 
-<Card
-  title="Sandbox SDK Reference"
-  icon="shield-halved"
-  href="/sandbox-sdk"
->
-  Learn about remote code execution in the Sandbox
+<Card title="Dashboard" icon="chart-line" href="https://cloudcoding.ai/home">
+  Manage your API keys and monitor usage
 </Card>
 
-<Card
-  title="Advanced Usage"
-  icon="graduation-cap"
-  href="/advanced-usage"
->
-  Discover advanced techniques and best practices
+<Card title="Pricing" icon="credit-card" href="/pricing">
+  Understand our transparent pricing model
 </Card>
 
-<Card
-  title="API Reference"
-  icon="code"
-  href="/api-reference"
->
-  View the complete API documentation
+<Card title="Advanced Usage" icon="graduation-cap" href="/development">
+  Learn advanced techniques and best practices
 </Card>
 
 </CardGroup>

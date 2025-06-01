@@ -1,6 +1,6 @@
 ---
-title: Introduction to Cloud Code SDK
-description: "Build Coding Agents with Cloud Code SDK"
+title: Introduction to Cloud Coding API
+description: "AI-powered code analysis and modification through a simple API"
 ---
 
 <img
@@ -14,68 +14,56 @@ description: "Build Coding Agents with Cloud Code SDK"
   alt="Hero Dark"
 />
 
-## What is Cloud Code SDK?
+## What is Cloud Coding API?
 
-Cloud Code is a progamable AI Coder SDK.
+Cloud Coding is a powerful AI coding agent accessible through a simple REST API. Point it at any GitHub repository and let Claude analyze, modify, or interact with your codebase using natural language.
 
-Despite it's name, we offer both local and remote coding enviornments.
+Our API clones your repository into a secure sandbox environment where Claude can explore the codebase, understand its structure, make changes, and push results back to your GitHub repository.
 
-You can think of it as being a way to control coding apps such as cursor or claude code in a low level way with a lot of control. Buit instead of using these coding apps, have use our own coding agent that can modify code from natural language, explore code bases, and use it's own built in tools.
+## How It Works
 
-This was made out of the observation that many coding tasks are becoming repetitive. While there are low hanging fruit for this sdk such as creating documentation for codebases and optimizing prompts based on a codebase, we have a much grander vision of closing the loop for AI Coding.
+1. **Make an API call** with your repository URL and instructions
+2. **Claude analyzes** your codebase in a secure sandbox
+3. **AI makes changes** based on your natural language requests
+4. **Results are pushed** back to your GitHub repository
 
-I find myself going through the same flow when coding with Cursor and Claude Code, so I'm hoping to replicate my coding process through using this SDK and I hope you do too.
-
-## Key Components
-
-The SDK consists of two main components:
+## Key Features
 
 <CardGroup cols={2}>
   <Card
-    title="Local SDK"
-    icon="laptop-code"
+    title="Natural Language Coding"
+    icon="code"
     href="/quickstart"
   >
-    AI Coding Agent in your local environment with low level access to your file system and tools for managing the file system.
+    Describe what you want in plain English - Claude handles the implementation
   </Card>
   <Card
-    title="Sandbox SDK"
+    title="Secure Sandbox Environment"
     icon="shield-halved"
-    href="/sandbox-sdk"
+    href="/quickstart"
   >
-    Runs in a remote coding sandbox with the same experience as the local sdk.
-  </Card>
-</CardGroup>
-
-## Features
-
-<CardGroup cols={2}>
-  <Card
-    title="LLM Code Editing"
-    icon="code"
-    href="/local-sdk/code"
-  >
-    Use any OpenAI or Anthropic Model to modify code with natural language
+    Your code runs in isolated environments that never affect your local system
   </Card>
   <Card
-    title="Secure Remote Execution"
-    icon="server"
-    href="/sandbox-sdk/running-commands"
+    title="Template System"
+    icon="template"
+    href="/templates"
   >
-    Run commands and test code in isolated sandbox environments without affecting your local system
+    Pre-built workflows for common tasks like planning, analysis, and documentation
   </Card>
   <Card
-    title="Cost Management"
-    icon="chart-line"
-    href="/local-sdk/costs"
-  >
-    Track message and session costs with built-in monitoring and credit systems
-  </Card>
-  <Card
-    title="Git Integration"
+    title="Direct GitHub Integration"
     icon="code-branch"
-    href="/local-sdk/configuration"
+    href="/quickstart"
   >
-    Track changes with optional Git integration for easy review and rollback
+    Automatically clones repositories and pushes changes back to your specified branch
   </Card>
 </CardGroup>
+
+## Use Cases
+
+- **Code Analysis**: Understand large codebases quickly
+- **Documentation**: Generate comprehensive docs for your projects
+- **Code Refactoring**: Modernize and improve existing code
+- **Feature Implementation**: Add new functionality with natural language descriptions
+- **Bug Fixes**: Identify and resolve issues across your codebase

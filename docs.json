@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "cloudcode SDK",
+  "name": "Cloud Coding API",
   "colors": {
     "primary": "#9e48e8",
     "light": "#ba81eb",
@@ -11,79 +11,20 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Getting Started",
         "groups": [
           {
-            "group": "Get Started",
+            "group": "Overview",
             "pages": [
               "introduction",
               "quickstart",
-              "development",
               "pricing"
             ]
-          }
-        ]
-      },
-      {
-        "tab": "Local SDK",
-        "groups": [
-          {
-            "group": "Basics",
-            "pages": [
-              "local-sdk/overview",
-              "local-sdk/installation",
-              "local-sdk/configuration"
-            ]
           },
           {
-            "group": "Features",
+            "group": "Advanced",
             "pages": [
-              "local-sdk/code",
-              "local-sdk/files",
-              "local-sdk/commands",
-              "local-sdk/headless",
-              "local-sdk/git-integration"
-            ]
-          },
-          {
-            "group": "Examples",
-            "pages": [
-              "examples/architect",
-              "examples/basic",
-              "examples/add_comments",
-              "examples/plan_then_execute",
-              "examples/cost_tracking_example",
-              "examples/langgraph_react_agent"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Sandbox SDK",
-        "groups": [
-          {
-            "group": "Basics",
-            "pages": [
-              "sandbox-sdk/overview",
-              "sandbox-sdk/setup"
-            ]
-          },
-          {
-            "group": "Features",
-            "pages": [
-              "sandbox-sdk/files",
-              "sandbox-sdk/running-commands",
-              "sandbox-sdk/ai-coding",
-              "sandbox-sdk/management"
-            ]
-          },
-          {
-            "group": "Examples",
-            "pages": [
-              "examples/sandbox_example",
-              "examples/langgraph_sandbox",
-              "examples/github_agent",
-              "examples/cost_track_sandbox"
+              "development"
             ]
           }
         ]
@@ -104,7 +45,7 @@
     "primary": {
       "type": "button",
       "label": "Dashboard",
-      "href": "https://cloudcoding.ai"
+      "href": "https://cloudcoding.ai/home"
     }
   },
   "footer": {
