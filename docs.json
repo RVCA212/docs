@@ -25,7 +25,8 @@
             "group": "Advanced",
             "pages": [
               "development",
-              "templates/overview"
+              "templates/overview",
+              "templates/building"
             ]
           }
         ]
