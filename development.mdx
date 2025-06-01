@@ -1,19 +1,74 @@
 ---
-title: 'Advanced Usage'
-description: 'Advanced techniques and best practices for Cloud Coding API'
+title: 'Templates & Advanced Usage'
+description: 'Using prebuilt templates and creating custom message workflows'
 ---
 
 <Info>
   **Prerequisite**: Ensure you've completed the [Quickstart](/quickstart) and have your API keys configured.
 </Info>
 
-## Custom Messages: Script Your AI Agent
+## Two Ways to Use Cloud Coding API
 
-The Cloud Coding API's most powerful feature is **custom messages** - allowing you to script exactly how the AI agent behaves. Instead of using pre-built templates, you can define precise conversation flows, control tool usage, and customize the execution environment.
+The Cloud Coding API offers two powerful approaches to automate your development workflow:
 
-### Quick Start Example
+### 1. **Prebuilt Templates** (Recommended for Getting Started)
+Ready-to-use templates for common development tasks. Perfect for quick automation without configuration.
 
-Here's a simple example to get you started:
+### 2. **Custom Messages** (Advanced Control)
+Script your AI agent's exact behavior with custom conversation flows, tool selection, and workflow control.
+
+## Using Prebuilt Templates
+
+The fastest way to get started is with our prebuilt templates. These are battle-tested workflows for common development tasks.
+
+### Our Favorite: Plan and Execute Template
+
+**Template ID**: `a2ef2e64-40e2-4c6a-99fc-767e3a30a963`
+
+This template breaks down complex tasks into manageable steps by first creating a detailed plan, then executing it systematically.
+
+```bash
+curl -X POST "https://api.cloudcoding.ai/invoke" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: $CLOUDCODING_API_KEY" \
+  -d '{
+    "template_id": "a2ef2e64-40e2-4c6a-99fc-767e3a30a963",
+    "variables": {
+      "task": "Add user authentication with JWT tokens to this React application"
+    },
+    "repo_url": "https://github.com/username/my-app",
+    "github_token": "'$GITHUB_TOKEN'",
+    "branch": "feature/auth",
+    "haiku": false
+  }'
+```
+
+### Why Use Prebuilt Templates?
+
+- ⚡ **Fast Setup**: No configuration needed - just provide variables
+- 🧪 **Battle-Tested**: Proven workflows used by thousands of developers
+- 📝 **Smart Planning**: Templates like Plan & Execute break complex tasks into steps
+- 🔄 **Consistent Results**: Standardized approaches to common problems
+- 🎯 **Best Practices**: Built-in industry standards and conventions
+
+### Available Template Categories
+
+| Category | Use Cases | Examples |
+|----------|-----------|----------|
+| **Planning & Analysis** | Code review, architecture planning | Plan & Execute, Code Audit |
+| **Feature Development** | Adding new functionality | Component Creation, API Development |
+| **Code Quality** | Testing, documentation, refactoring | Test Generation, Doc Writing |
+| **DevOps & Deployment** | CI/CD, containerization | Docker Setup, Pipeline Creation |
+
+<Info>
+Browse all available templates in the [Templates Library](/templates) or use our **Plan and Execute** template for most complex tasks.
+</Info>
+
+## Custom Messages: Advanced Control
+
+When you need complete control over the AI agent's behavior, custom messages let you script exact workflows.
+
+### Quick Custom Message Example
 
 ```bash
 curl -X POST "https://api.cloudcoding.ai/invoke" \
@@ -23,7 +78,7 @@ curl -X POST "https://api.cloudcoding.ai/invoke" \
     "messages": [
       {
         "tools": "all",
-        "content": "Analyze this repository and add comprehensive error handling to all functions"
+        "content": "Add comprehensive error handling to all API endpoints"
       }
     ],
     "repo_url": "https://github.com/username/repo",
@@ -33,15 +88,7 @@ curl -X POST "https://api.cloudcoding.ai/invoke" \
   }'
 ```
 
-### Why Use Custom Messages?
-
-- 🎯 **Complete Control**: Script exact conversation flows and agent behavior
-- 🔧 **Tool Selection**: Choose specific tools for each step of your workflow
-- 🐍 **Custom Environment**: Run your own Python code before AI execution
-- 📁 **Directory Focus**: Limit the agent's scope to specific repository parts
-- 🔄 **Conversation Flow**: Continue previous contexts or start fresh sessions
-
-## Message Structure
+### Message Structure
 
 Each message in the `messages` array supports these fields:
 
@@ -51,13 +98,19 @@ Each message in the `messages` array supports these fields:
 | `tools` | string/array | ❌ No | Available tools: `"all"` or specific tool names |
 | `continueConversation` | boolean | ❌ No | Continue previous conversation context |
 | `workingDir` | string | ❌ No | Custom working directory for this message |
-| `customInitCode` | string | ❌ No | Python code to execute before AI initialization |
 
-## Progressive Examples
+### Why Use Custom Messages?
+
+- 🎯 **Complete Control**: Script exact conversation flows and agent behavior
+- 🔧 **Tool Selection**: Choose specific tools for each step of your workflow
+- 📁 **Directory Focus**: Limit the agent's scope to specific repository parts
+- 🔄 **Conversation Flow**: Continue previous contexts or start fresh sessions
+
+## Common Custom Message Patterns
 
 ### 1. Simple Single Task
 
-Perfect for straightforward development tasks:
+Perfect for focused development tasks:
 
 ```bash
 curl -X POST "https://api.cloudcoding.ai/invoke" \
@@ -89,16 +142,16 @@ curl -X POST "https://api.cloudcoding.ai/invoke" \
     "messages": [
       {
         "tools": "all",
-        "content": "Analyze the current authentication system and identify security improvements"
+        "content": "Analyze the authentication system and identify improvements"
       },
       {
         "tools": "all",
-        "content": "Now implement the security improvements you identified",
+        "content": "Implement the improvements you identified",
         "continueConversation": true
       },
       {
         "tools": "all",
-        "content": "Add comprehensive tests for the updated authentication system",
+        "content": "Add tests for the updated system",
         "continueConversation": true
       }
     ],
@@ -109,9 +162,9 @@ curl -X POST "https://api.cloudcoding.ai/invoke" \
   }'
 ```
 
-### 3. Tool-Specific Operations
+### 3. Tool-Controlled Workflow
 
-Control exactly which tools are used at each step:
+Control exactly which tools are used:
 
 ```bash
 curl -X POST "https://api.cloudcoding.ai/invoke" \
@@ -121,16 +174,16 @@ curl -X POST "https://api.cloudcoding.ai/invoke" \
     "messages": [
       {
         "tools": ["Read", "LS", "Grep"],
-        "content": "First, explore and understand the project structure without making any changes"
+        "content": "Explore and understand the project structure"
       },
       {
         "tools": ["Edit", "Write"],
-        "content": "Now refactor the main component based on your analysis",
+        "content": "Refactor based on your analysis",
         "continueConversation": true
       },
       {
         "tools": ["Bash"],
-        "content": "Run tests to ensure all changes work correctly",
+        "content": "Run tests to verify changes",
         "continueConversation": true
       }
     ],
@@ -141,34 +194,36 @@ curl -X POST "https://api.cloudcoding.ai/invoke" \
   }'
 ```
 
-### 4. Custom Environment Setup
+### 5. Multi-Directory Workflow (Separate API Calls)
 
-Run your own Python code before AI execution:
+<Warning>
+**Critical Limitation**: You **cannot** change `workingDir` and use `continueConversation: true` in the same request. Each directory change requires a separate API call with a fresh conversation.
+</Warning>
+
+Work across different parts of your repository using separate API calls:
 
 ```bash
+# ❌ INCORRECT - This example will NOT work as expected
+# The continueConversation with different workingDir will fail
 curl -X POST "https://api.cloudcoding.ai/invoke" \
-  -H "Content-Type: application/json" \
-  -H "x-api-key: $CLOUDCODING_API_KEY" \
   -d '{
     "messages": [
       {
         "tools": "all",
-        "content": "Set up comprehensive testing for this Node.js application",
-        "customInitCode": "import os\nimport datetime\n\nstart_time = datetime.datetime.now()\nprint(f\"🚀 Test setup started at {start_time}\")\n\ndef log_progress(msg):\n    elapsed = datetime.datetime.now() - start_time\n    print(f\"⏱️  [{elapsed}] {msg}\")\n\nlog_progress(\"Environment setup complete\")"
+        "content": "Migrate components to TypeScript",
+        "workingDir": "./src/components"
+      },
+      {
+        "tools": "all",
+        "content": "Now update hooks",
+        "workingDir": "./src/hooks",
+        "continueConversation": true  // ❌ This will not work!
       }
-    ],
-    "repo_url": "https://github.com/username/node-api",
-    "github_token": "'$GITHUB_TOKEN'",
-    "branch": "testing/comprehensive",
-    "haiku": true
+    ]
   }'
-```
 
-### 5. Directory-Focused Development
-
-Focus the agent on specific parts of your repository:
-
-```bash
+# ✅ CORRECT - Use separate API calls for each directory
+# First call - Components
 curl -X POST "https://api.cloudcoding.ai/invoke" \
   -H "Content-Type: application/json" \
   -H "x-api-key: $CLOUDCODING_API_KEY" \
@@ -178,18 +233,42 @@ curl -X POST "https://api.cloudcoding.ai/invoke" \
         "tools": "all",
         "content": "Migrate all components to TypeScript with proper type definitions",
         "workingDir": "./src/components"
-      },
+      }
+    ],
+    "repo_url": "https://github.com/username/typescript-migration",
+    "github_token": "'$GITHUB_TOKEN'",
+    "branch": "migration/typescript",
+    "haiku": false
+  }'
+
+# Second call - Hooks
+curl -X POST "https://api.cloudcoding.ai/invoke" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: $CLOUDCODING_API_KEY" \
+  -d '{
+    "messages": [
       {
         "tools": "all",
-        "content": "Now update the hooks to use TypeScript interfaces",
-        "workingDir": "./src/hooks",
-        "continueConversation": true
-      },
+        "content": "Update the hooks to use TypeScript interfaces",
+        "workingDir": "./src/hooks"
+      }
+    ],
+    "repo_url": "https://github.com/username/typescript-migration",
+    "github_token": "'$GITHUB_TOKEN'",
+    "branch": "migration/typescript",
+    "haiku": false
+  }'
+
+# Third call - API Layer
+curl -X POST "https://api.cloudcoding.ai/invoke" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: $CLOUDCODING_API_KEY" \
+  -d '{
+    "messages": [
       {
         "tools": "all",
-        "content": "Finally, update the API layer with TypeScript types",
-        "workingDir": "./src/api",
-        "continueConversation": true
+        "content": "Update the API layer with TypeScript types",
+        "workingDir": "./src/api"
       }
     ],
     "repo_url": "https://github.com/username/typescript-migration",
@@ -199,47 +278,70 @@ curl -X POST "https://api.cloudcoding.ai/invoke" \
   }'
 ```
 
-## Advanced Features
+## Key Features
 
 ### Available Tools
 
-Based on the system capabilities, you can specify these tools:
+You can control which tools the AI agent uses:
 
-| Tool Name | Description |
-|-----------|-------------|
-| `"all"` | All available tools (recommended for most cases) |
-| `"Task"` | Task management and planning |
-| `"Bash"` | Execute shell commands |
-| `"Glob"` | File pattern matching |
-| `"Grep"` | Text search and pattern matching |
-| `"LS"` | Directory listing and navigation |
-| `"Read"` | Read file contents |
-| `"Edit"` | Edit existing files |
-| `"MultiEdit"` | Edit multiple files simultaneously |
-| `"Write"` | Create new files |
-| `"NotebookRead"` | Read Jupyter notebooks |
-| `"NotebookEdit"` | Edit Jupyter notebooks |
-| `"WebFetch"` | Fetch web content |
-| `"TodoRead"` | Read todo lists |
-| `"TodoWrite"` | Manage todo lists |
-| `"WebSearch"` | Search the web for information |
+| Tool Category | Examples | Use Cases |
+|---------------|----------|-----------|
+| **File Operations** | `Read`, `Edit`, `Write`, `MultiEdit` | Code modification and creation |
+| **Navigation** | `LS`, `Glob`, `Grep` | Project exploration and search |
+| **Execution** | `Bash` | Running tests, builds, commands |
+| **Planning** | `Task` | Breaking down complex work |
+| **External** | `WebFetch`, `WebSearch` | Research and documentation |
+| **All Tools** | `"all"` | Full capabilities (recommended) |
 
-### Custom Python Code Execution
+### Working Directory Control
 
-The `customInitCode` field runs Python code before the AI agent starts:
+The `workingDir` field allows you to focus the AI agent on specific parts of your repository:
 
 ```json
 {
-  "customInitCode": "import subprocess\nimport json\n\n# Environment validation\nnode_result = subprocess.run(['node', '--version'], capture_output=True, text=True)\nprint(f'Node.js: {node_result.stdout.strip()}')\n\n# Helper functions\ndef backup_file(filename):\n    print(f'Creating backup of {filename}')\n    # Your backup logic here\n\n# Project configuration\nconfig = {'framework': 'React', 'typescript': True}\nprint(f'Project config: {config}')"
+  "workingDir": "./src/components",
+  "content": "Refactor all React components to use TypeScript"
 }
 ```
 
+<Warning>
+**Important Limitation**: When changing the `workingDir`, you **cannot** use `continueConversation: true`. Each directory change requires starting a fresh conversation. The AI agent gets mounted to the specified directory and cannot maintain context across different working directories.
+</Warning>
+
 **Common Use Cases:**
-- Environment validation and setup
-- Helper function definitions
-- Pre-execution logging and monitoring
-- Configuration and variable setup
-- External tool version checks
+- Focus on specific modules or directories
+- Large codebase organization
+- Component-by-component refactoring
+- Gradual migration workflows
+- Targeted testing and validation
+
+**Correct Usage Pattern:**
+```bash
+# ❌ INCORRECT - This will not work as expected
+{
+  "messages": [
+    {
+      "workingDir": "./src/components",
+      "content": "Analyze React components"
+    },
+    {
+      "workingDir": "./src/utils",
+      "content": "Now analyze utils",
+      "continueConversation": true  // ❌ Will not work with directory change
+    }
+  ]
+}
+
+# ✅ CORRECT - Each directory gets its own conversation
+{
+  "messages": [
+    {
+      "workingDir": "./src/components",
+      "content": "Analyze and refactor React components"
+    }
+  ]
+}
+```
 
 ### Response Format
 
@@ -250,259 +352,53 @@ The API returns Server-Sent Events (SSE) with these event types:
 3. **Executor**: Agent conversation and tool usage
 4. **Push**: Final commit and push status
 
-## Complex Workflow Patterns
+## When to Use Which Approach
 
-### Plan and Execute Pattern
+### Use Prebuilt Templates When:
+- ✅ You want to get started quickly
+- ✅ Your task fits a common pattern (planning, testing, deployment)
+- ✅ You prefer battle-tested workflows
+- ✅ You're new to the Cloud Coding API
 
-Perfect for large, complex features:
+**Recommended**: Start with the **Plan and Execute** template (`a2ef2e64-40e2-4c6a-99fc-767e3a30a963`) for complex tasks.
 
-```bash
-curl -X POST "https://api.cloudcoding.ai/invoke" \
-  -H "Content-Type: application/json" \
-  -H "x-api-key: $CLOUDCODING_API_KEY" \
-  -d '{
-    "messages": [
-      {
-        "tools": "all",
-        "content": "Create a comprehensive plan in plan.md for implementing user authentication with JWT, password reset, and two-factor authentication. Include all necessary files, dependencies, and implementation steps."
-      },
-      {
-        "tools": "all",
-        "content": "Implement the authentication system according to the detailed plan in plan.md. Create all backend APIs, database schemas, and security middleware.",
-        "continueConversation": true
-      },
-      {
-        "tools": "all",
-        "content": "Now implement the frontend authentication components, forms, and state management to integrate with the backend APIs.",
-        "continueConversation": true
-      },
-      {
-        "tools": "all",
-        "content": "Add comprehensive tests for both backend and frontend authentication features, including edge cases and security scenarios.",
-        "continueConversation": true
-      }
-    ],
-    "repo_url": "https://github.com/username/full-auth-system",
-    "github_token": "'$GITHUB_TOKEN'",
-    "branch": "feature/complete-auth",
-    "haiku": false
-  }'
-```
+### Use Custom Messages When:
+- ✅ You need precise control over AI behavior
+- ✅ Your workflow doesn't match existing templates
+- ✅ You want to specify exact tools for each step
+- ✅ You need conversation continuity across steps
 
-### Code Migration Workflow
+## Next Steps
 
-For large-scale code transformations:
+### For Beginners
+1. **Browse Templates**: Check the [Templates Library](/templates) for ready-to-use workflows
+2. **Try Plan & Execute**: Use template `a2ef2e64-40e2-4c6a-99fc-767e3a30a963` for your first complex task
+3. **Learn Variables**: Understand how to customize templates with variables
 
-```bash
-curl -X POST "https://api.cloudcoding.ai/invoke" \
-  -H "Content-Type: application/json" \
-  -H "x-api-key: $CLOUDCODING_API_KEY" \
-  -d '{
-    "messages": [
-      {
-        "tools": ["Read", "LS", "Grep"],
-        "content": "Analyze the entire JavaScript codebase and create a migration plan for converting to TypeScript. Identify all files that need conversion and potential type challenges."
-      },
-      {
-        "tools": ["Edit", "Write"],
-        "content": "Start with the utility functions and core modules - convert them to TypeScript with proper type definitions and interfaces.",
-        "continueConversation": true
-      },
-      {
-        "tools": ["Edit", "Write"],
-        "content": "Convert the React components to TypeScript, ensuring proper prop types, state types, and event handler types.",
-        "continueConversation": true
-      },
-      {
-        "tools": ["Bash"],
-        "content": "Run TypeScript compiler to check for errors and fix any type issues that arise.",
-        "continueConversation": true
-      },
-      {
-        "tools": ["Bash"],
-        "content": "Update build scripts and run the full test suite to ensure the migration is successful.",
-        "continueConversation": true
-      }
-    ],
-    "repo_url": "https://github.com/username/js-to-ts-migration",
-    "github_token": "'$GITHUB_TOKEN'",
-    "branch": "migration/typescript-conversion",
-    "haiku": false
-  }'
-```
+### For Advanced Users
+1. **Custom Messages**: Read the [Custom Templates Guide](/templates/overview) for complete control
+2. **Workflow Patterns**: Learn advanced patterns like tool selection and conversation flow
+3. **Integration**: Build custom integrations using the API
 
-## Streaming Response Handling
+## Common Parameters
 
-### JavaScript/Node.js
-```javascript
-const response = await fetch('https://api.cloudcoding.ai/invoke', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'x-api-key': process.env.CLOUDCODING_API_KEY
-  },
-  body: JSON.stringify({
-    messages: [
-      {
-        tools: "all",
-        content: "Add comprehensive error handling to all API endpoints"
-      }
-    ],
-    repo_url: 'https://github.com/username/repo',
-    github_token: process.env.GITHUB_TOKEN,
-    branch: 'main',
-    haiku: true
-  })
-});
+| Parameter | Description | Example |
+|-----------|-------------|---------|
+| `repo_url` | GitHub repository URL | `"https://github.com/user/repo"` |
+| `github_token` | GitHub access token | `"ghp_xxxxxxxxxxxx"` |
+| `branch` | Target branch | `"main"` or `"feature/new-component"` |
+| `haiku` | Model selection | `true` (fast) or `false` (powerful) |
 
-const reader = response.body.getReader();
-const decoder = new TextDecoder();
+### Model Selection Guide
+- **Haiku** (`"haiku": true`): Fast, cost-effective for simple tasks
+- **Sonnet** (`"haiku": false`): More powerful for complex reasoning and large codebases
 
-while (true) {
-  const { done, value } = await reader.read();
-  if (done) break;
+## Getting Help
 
-  const chunk = decoder.decode(value);
-  const lines = chunk.split('\n');
+- 📚 **Templates**: Browse the [Templates Library](/templates) for prebuilt workflows
+- 🛠️ **Custom Messages**: Read the [Custom Templates Guide](/templates/overview) for advanced control
+- 💬 **Support**: Contact our team for help with complex use cases
 
-  for (const line of lines) {
-    if (line.startsWith('data: ')) {
-      const data = JSON.parse(line.slice(6));
-      console.log('Event:', data);
-    }
-  }
-}
-```
-
-### Python
-```python
-import requests
-import json
-import os
-
-response = requests.post(
-    'https://api.cloudcoding.ai/invoke',
-    headers={
-        'Content-Type': 'application/json',
-        'x-api-key': os.getenv('CLOUDCODING_API_KEY')
-    },
-    json={
-        'messages': [
-            {
-                'tools': 'all',
-                'content': 'Optimize database queries and add proper indexing'
-            }
-        ],
-        'repo_url': 'https://github.com/username/repo',
-        'github_token': os.getenv('GITHUB_TOKEN'),
-        'branch': 'main',
-        'haiku': True
-    },
-    stream=True
-)
-
-for line in response.iter_lines():
-    if line.startswith(b'data: '):
-        data = json.loads(line[6:])
-        print('Event:', data)
-```
-
-## Error Handling
-
-### Common Error Patterns
-```javascript
-const handleResponse = async (response) => {
-  if (!response.ok) {
-    const error = await response.text();
-
-    if (response.status === 401) {
-      throw new Error('Invalid API key');
-    } else if (response.status === 403) {
-      throw new Error('GitHub token permissions insufficient');
-    } else if (response.status === 404) {
-      throw new Error('Repository not found or inaccessible');
-    } else {
-      throw new Error(`API error: ${error}`);
-    }
-  }
-
-  return response;
-};
-```
-
-### Retry Logic
-```javascript
-const retryWithBackoff = async (fn, maxRetries = 3) => {
-  for (let i = 0; i < maxRetries; i++) {
-    try {
-      return await fn();
-    } catch (error) {
-      if (i === maxRetries - 1) throw error;
-
-      const delay = Math.pow(2, i) * 1000; // Exponential backoff
-      await new Promise(resolve => setTimeout(resolve, delay));
-    }
-  }
-};
-```
-
-## Performance Optimization
-
-### Choose the Right Model
-- **Claude Sonnet** (`"haiku": false`): Use for complex reasoning and large codebases
-- **Claude Haiku** (`"haiku": true`): Use for simple tasks, documentation, and quick fixes
-
-### Optimize Repository Access
-```bash
-# For large repositories, use workingDir to focus on specific areas
-curl -X POST "https://api.cloudcoding.ai/invoke" \
-  -H "Content-Type: application/json" \
-  -H "x-api-key: $CLOUDCODING_API_KEY" \
-  -d '{
-    "messages": [
-      {
-        "tools": "all",
-        "content": "Add React TypeScript types to all components",
-        "workingDir": "./packages/frontend"
-      }
-    ],
-    "repo_url": "https://github.com/username/monorepo",
-    "github_token": "'$GITHUB_TOKEN'",
-    "branch": "main",
-    "haiku": true
-  }'
-```
-
-## Integration Examples
-
-### GitHub Actions
-```yaml
-name: AI Code Review
-on:
-  pull_request:
-    branches: [main]
-
-jobs:
-  ai-review:
-    runs-on: ubuntu-latest
-    steps:
-      - name: AI Code Analysis
-        run: |
-          curl -X POST "https://api.cloudcoding.ai/invoke" \
-            -H "Content-Type: application/json" \
-            -H "x-api-key: ${{ secrets.CLOUDCODING_API_KEY }}" \
-            -d '{
-              "messages": [
-                {
-                  "tools": ["Read", "Grep", "WebSearch"],
-                  "content": "Review this pull request for potential bugs, security issues, and code quality improvements"
-                }
-              ],
-              "repo_url": "'$GITHUB_REPOSITORY'",
-              "github_token": "${{ secrets.GITHUB_TOKEN }}",
-              "branch": "'$GITHUB_HEAD_REF'",
-              "haiku": true
-            }'
-```
-
-Custom messages give you unprecedented control over AI-powered development workflows. Start with simple single-message tasks and gradually build more complex, multi-step workflows as you become comfortable with the system.
+<Card title="Pro Tip" icon="lightbulb">
+Start with the **Plan and Execute** template (`a2ef2e64-40e2-4c6a-99fc-767e3a30a963`) for your first complex task. It breaks down work into manageable steps automatically.
+</Card>

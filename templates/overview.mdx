@@ -1,15 +1,19 @@
 ---
-title: 'Custom Templates Overview'
-description: 'Complete control over AI agent behavior with custom message workflows'
+title: 'Custom Templates: Complete Control'
+description: 'Script your AI agent with custom message workflows for precise control'
 ---
 
-# Script Your AI Agent with Custom Messages
+# Custom Templates: Script Your AI Agent
 
-Transform how you use Cloud Coding API by **scripting your AI agent's exact behavior**. Custom messages let you define precise conversation flows, control tool usage, and create powerful development workflows that adapt to your specific needs.
+Take complete control over the Cloud Coding API by **scripting your AI agent's exact behavior**. Custom messages let you define precise conversation flows, control tool usage, and create powerful development workflows that adapt to your specific needs.
+
+<Info>
+**New to Cloud Coding API?** Start with [prebuilt templates](/development) for quick results, then return here when you need complete control over AI behavior.
+</Info>
 
 ## Quick Start
 
-Instead of using pre-built templates, define your own workflow:
+Define your own custom workflow instead of using prebuilt templates:
 
 ```json
 {
@@ -27,18 +31,18 @@ Instead of using pre-built templates, define your own workflow:
 ```
 
 <Info>
-This simple example shows the power of custom messages - you get the same AI capabilities with complete control over the conversation flow.
+Custom messages give you the same AI capabilities as prebuilt templates, but with complete control over the conversation flow and execution steps.
 </Info>
 
-## Why Custom Messages?
+## Why Use Custom Messages?
 
-| Traditional Templates | Custom Messages |
-|----------------------|-----------------|
+| Prebuilt Templates | Custom Messages |
+|-------------------|-----------------|
 | ❌ Fixed workflows | ✅ Script any workflow |
 | ❌ Limited tool control | ✅ Choose tools per step |
-| ❌ No environment setup | ✅ Run custom Python code |
-| ❌ Single conversation | ✅ Multi-step conversations |
 | ❌ Repository-wide scope | ✅ Directory-focused work |
+| ❌ Template variables only | ✅ Full conversation control |
+| ❌ Predefined steps | ✅ Custom workflow logic |
 
 ## Message Structure
 
@@ -49,10 +53,13 @@ Every message supports these fields:
   "content": "Your instruction for the AI agent",
   "tools": "all",                    // or ["Read", "Edit", "Bash"]
   "continueConversation": true,      // Continue previous context
-  "workingDir": "./src/components",  // Focus on specific directory
-  "customInitCode": "print('Hello')" // Python code before AI starts
+  "workingDir": "./src/components"   // Focus on specific directory
 }
 ```
+
+<Warning>
+**Critical Limitation**: You cannot change `workingDir` and use `continueConversation: true` in the same request. When changing directories, you must start a fresh conversation (omit `continueConversation` or set it to `false`).
+</Warning>
 
 ## Progressive Examples
 
@@ -142,9 +149,9 @@ curl -X POST "https://api.cloudcoding.ai/invoke" \
   }'
 ```
 
-### Level 4: Custom Environment Setup
+### Level 4: Complex Task Planning
 
-Run your own Python code before the AI agent starts:
+Break down complex tasks into manageable steps:
 
 ```bash
 curl -X POST "https://api.cloudcoding.ai/invoke" \
@@ -153,9 +160,13 @@ curl -X POST "https://api.cloudcoding.ai/invoke" \
   -d '{
     "messages": [
       {
+        "tools": ["Task", "Read", "LS"],
+        "content": "Analyze this project and create a detailed plan for setting up a CI/CD pipeline"
+      },
+      {
         "tools": "all",
-        "content": "Set up a CI/CD pipeline for this project",
-        "customInitCode": "import datetime\nimport os\n\n# Setup logging\nstart_time = datetime.datetime.now()\nprint(f\"🚀 CI/CD setup started at {start_time}\")\n\n# Check environment\nprint(f\"Working directory: {os.getcwd()}\")\n\n# Helper functions\ndef log_step(step):\n    elapsed = datetime.datetime.now() - start_time\n    print(f\"⏱️  [{elapsed}] {step}\")\n\nlog_step(\"Environment validation complete\")"
+        "content": "Implement the CI/CD pipeline based on the analysis and plan",
+        "continueConversation": true
       }
     ],
     "repo_url": "https://github.com/username/deployment-project",
@@ -167,9 +178,35 @@ curl -X POST "https://api.cloudcoding.ai/invoke" \
 
 ### Level 5: Directory-Focused Development
 
-Focus the agent on specific parts of your codebase:
+<Warning>
+**Important**: This example shows an **incorrect** pattern. You cannot change `workingDir` and use `continueConversation: true`. Each directory requires a separate API call.
+</Warning>
+
+Focus the agent on specific parts of your codebase using separate API calls:
 
 ```bash
+# ❌ INCORRECT - Will not work as expected
+curl -X POST "https://api.cloudcoding.ai/invoke" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: your_api_key" \
+  -d '{
+    "messages": [
+      {
+        "tools": "all",
+        "content": "Convert React components to TypeScript",
+        "workingDir": "./src/components"
+      },
+      {
+        "tools": "all",
+        "content": "Update hooks to TypeScript",
+        "workingDir": "./src/hooks",
+        "continueConversation": true  // ❌ This will fail!
+      }
+    ]
+  }'
+
+# ✅ CORRECT - Separate API calls for each directory
+# Call 1: Components
 curl -X POST "https://api.cloudcoding.ai/invoke" \
   -H "Content-Type: application/json" \
   -H "x-api-key: your_api_key" \
@@ -179,18 +216,42 @@ curl -X POST "https://api.cloudcoding.ai/invoke" \
         "tools": "all",
         "content": "Convert all React components to TypeScript with proper prop types",
         "workingDir": "./src/components"
-      },
+      }
+    ],
+    "repo_url": "https://github.com/username/typescript-migration",
+    "github_token": "ghp_...",
+    "branch": "typescript-conversion",
+    "haiku": false
+  }'
+
+# Call 2: Hooks
+curl -X POST "https://api.cloudcoding.ai/invoke" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: your_api_key" \
+  -d '{
+    "messages": [
       {
         "tools": "all",
         "content": "Update the custom hooks to use TypeScript interfaces",
-        "workingDir": "./src/hooks",
-        "continueConversation": true
-      },
+        "workingDir": "./src/hooks"
+      }
+    ],
+    "repo_url": "https://github.com/username/typescript-migration",
+    "github_token": "ghp_...",
+    "branch": "typescript-conversion",
+    "haiku": false
+  }'
+
+# Call 3: Utils
+curl -X POST "https://api.cloudcoding.ai/invoke" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: your_api_key" \
+  -d '{
+    "messages": [
       {
         "tools": "all",
         "content": "Add TypeScript types to the utility functions",
-        "workingDir": "./src/utils",
-        "continueConversation": true
+        "workingDir": "./src/utils"
       }
     ],
     "repo_url": "https://github.com/username/typescript-migration",
@@ -267,8 +328,7 @@ Comprehensive security review and fixes:
   "messages": [
     {
       "tools": ["Read", "Grep", "WebSearch"],
-      "content": "Conduct a thorough security audit of this application, checking for common vulnerabilities like SQL injection, XSS, CSRF, and insecure authentication",
-      "customInitCode": "import datetime\n\naudit_start = datetime.datetime.now()\nprint(f\"🔒 Security audit started at {audit_start}\")\n\nvulnerabilities = []\n\ndef log_vulnerability(vuln_type, file, severity):\n    vulnerabilities.append({\n        'type': vuln_type,\n        'file': file,\n        'severity': severity,\n        'timestamp': datetime.datetime.now()\n    })\n    print(f\"⚠️  {severity.upper()}: {vuln_type} in {file}\")"
+      "content": "Conduct a thorough security audit of this application, checking for common vulnerabilities like SQL injection, XSS, CSRF, and insecure authentication"
     },
     {
       "tools": ["Edit", "Write"],
@@ -320,23 +380,6 @@ Large-scale code transformations:
 
 ## Advanced Features
 
-### Custom Python Code Execution
-
-The `customInitCode` field allows you to run Python code before the AI agent starts:
-
-```json
-{
-  "customInitCode": "import subprocess\nimport json\nimport os\n\n# Environment validation\nnode_version = subprocess.run(['node', '--version'], capture_output=True, text=True)\nprint(f'Node.js version: {node_version.stdout.strip()}')\n\n# Project configuration\nproject_config = {\n    'framework': 'React',\n    'typescript': True,\n    'testing': 'Jest'\n}\nprint(f'Project configuration: {json.dumps(project_config, indent=2)}')\n\n# Helper functions\ndef validate_file_exists(filepath):\n    if os.path.exists(filepath):\n        print(f'✅ {filepath} exists')\n        return True\n    else:\n        print(f'❌ {filepath} not found')\n        return False\n\n# Setup complete\nprint('🚀 Custom environment setup complete')"
-}
-```
-
-**Common Use Cases:**
-- Environment validation and setup
-- Helper function definitions
-- Logging and monitoring setup
-- Configuration loading
-- Pre-execution checks
-
 ### Conversation Continuity
 
 Use `continueConversation: true` to maintain context across messages:
@@ -363,7 +406,12 @@ Use `continueConversation: true` to maintain context across messages:
 
 Use `workingDir` to focus the agent on specific parts of your repository:
 
+<Warning>
+**Note**: The example below shows an incorrect pattern - you cannot change `workingDir` and use `continueConversation: true` together.
+</Warning>
+
 ```json
+// ❌ INCORRECT - This will not work
 {
   "messages": [
     {
@@ -373,10 +421,73 @@ Use `workingDir` to focus the agent on specific parts of your repository:
     {
       "content": "Update the API routes to use the optimized queries",
       "workingDir": "./backend/routes",
-      "continueConversation": true
+      "continueConversation": true  // ❌ Will fail with directory change
     }
   ]
 }
+
+// ✅ CORRECT - Use separate API calls
+// First call:
+{
+  "messages": [
+    {
+      "content": "Optimize all database queries in this directory",
+      "workingDir": "./backend/database"
+    }
+  ]
+}
+
+// Second call:
+{
+  "messages": [
+    {
+      "content": "Update the API routes to use the optimized queries from the database directory",
+      "workingDir": "./backend/routes"
+    }
+  ]
+}
+```
+
+## Working Directory Limitations
+
+<Warning>
+**Critical Technical Constraint**: The Cloud Coding API has an important limitation when using `workingDir`:
+
+- ❌ **Cannot combine** `workingDir` changes with `continueConversation: true`
+- ✅ **Must use separate API calls** for each different working directory
+- 🔧 **Technical reason**: The AI agent gets mounted to the specified directory and cannot maintain context across different mount points
+
+This limitation is enforced at the system level and cannot be worked around.
+</Warning>
+
+### Common Mistake
+```json
+// ❌ This will NOT work - will fail or behave unexpectedly
+{
+  "messages": [
+    {
+      "workingDir": "./frontend",
+      "content": "Update React components"
+    },
+    {
+      "workingDir": "./backend",
+      "content": "Now update the API",
+      "continueConversation": true  // ❌ FAILS with directory change
+    }
+  ]
+}
+```
+
+### Correct Approach
+```bash
+# ✅ Two separate API calls
+# Call 1: Frontend work
+curl -X POST "https://api.cloudcoding.ai/invoke" \
+  -d '{"messages": [{"workingDir": "./frontend", "content": "Update React components"}], ...}'
+
+# Call 2: Backend work
+curl -X POST "https://api.cloudcoding.ai/invoke" \
+  -d '{"messages": [{"workingDir": "./backend", "content": "Update the API"}], ...}'
 ```
 
 ## Best Practices
@@ -431,10 +542,11 @@ Then evolve to:
 }
 ```
 
-### 5. Environment Validation
+### 5. Task Planning
 ```json
 {
-  "customInitCode": "import subprocess\n\n# Validate required tools\ntools = ['node', 'npm', 'git']\nfor tool in tools:\n    result = subprocess.run([tool, '--version'], capture_output=True)\n    if result.returncode == 0:\n        print(f'✅ {tool} available')\n    else:\n        print(f'❌ {tool} not found')"
+  "tools": ["Task", "Read", "LS"],
+  "content": "Create a detailed plan before implementing this complex feature"
 }
 ```
 
@@ -496,8 +608,12 @@ for event in create_custom_workflow("your_api_key", messages, "https://github.co
 | **Single Message** | Simple tasks | Add dark mode toggle |
 | **Multi-Step** | Related task sequence | Plan → Implement → Test |
 | **Tool-Controlled** | Specific operations | Read-only analysis, then editing |
-| **Environment Setup** | Custom initialization | Logging, validation, helpers |
-| **Directory-Focused** | Large codebase work | Component-by-component migration |
+| **Task Planning** | Complex feature development | Plan → Implement → Test → Deploy |
+| **Directory-Focused** | Large codebase work (separate calls) | Component migration per directory |
+
+<Info>
+**Note**: Directory-focused patterns require separate API calls due to the `workingDir` + `continueConversation` limitation.
+</Info>
 
 ## Next Steps
 
@@ -506,7 +622,7 @@ Ready to build your first custom workflow? Start with:
 1. **Simple single message** - Get comfortable with the basic structure
 2. **Add conversation flow** - Try `continueConversation: true`
 3. **Control tools** - Specify exact tools for each step
-4. **Custom environment** - Add your own Python initialization
+4. **Directory focusing** - Use `workingDir` for targeted development
 5. **Complex workflows** - Combine all features for powerful automation
 
 <Card title="Pro Tip" icon="lightbulb">
