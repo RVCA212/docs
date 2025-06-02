@@ -1,6 +1,6 @@
 ---
 title: Introduction to Cloud Coding API
-description: "AI-powered code analysis and modification through a simple API"
+description: "Claude Code in the Cloud"
 ---
 
 <img
@@ -14,56 +14,70 @@ description: "AI-powered code analysis and modification through a simple API"
   alt="Hero Dark"
 />
 
-## What is Cloud Coding API?
+Here's your improved intro page, making it more straightforward, personal, and down-to-earth:
 
-Cloud Coding is a powerful AI coding agent accessible through a simple REST API. Point it at any GitHub repository and let Claude analyze, modify, or interact with your codebase using natural language.
+---
 
-Our API clones your repository into a secure sandbox environment where Claude can explore the codebase, understand its structure, make changes, and push results back to your GitHub repository.
+## What is Cloud Coding?
+
+Cloud Coding is an AI-powered coding assistant that lets you modify your GitHub repositories using plain English. Just point Claude at your repo, tell it what changes you'd like to see, and it handles the rest—no complicated setups or confusing scripts required.
+
+Under the hood, our API safely clones your repository into a virtual environment. From there, Claude explores your code, makes modifications, and pushes the updates back directly to your GitHub repository.
 
 ## How It Works
 
-1. **Make an API call** with your repository URL and instructions
-2. **Claude analyzes** your codebase in a secure sandbox
-3. **AI makes changes** based on your natural language requests
-4. **Results are pushed** back to your GitHub repository
+Using Cloud Coding is straightforward:
 
-## Key Features
+1. **Send an API request** with your GitHub repo URL and your instructions.
+2. **Claude clones and explores** your repository in a secure, isolated VM.
+3. **Claude makes the changes** you've described, step-by-step.
+4. **The finished code** is pushed back automatically to your GitHub repository.
+
+## Coolest Feature: Templates ✨
+
+With Templates, you can script multiple instructions into a single workflow. Claude follows these instructions sequentially, making it easy to automate tasks like code planning, analysis, refactoring, and even generating documentation.
+
+Think of Templates like reusable coding recipes—you create the steps once, and Claude handles the rest every time.
+
+## Why You'll Love Cloud Coding
 
 <CardGroup cols={2}>
   <Card
-    title="Natural Language Coding"
+    title="Plain-English Coding"
     icon="code"
     href="/quickstart"
   >
-    Describe what you want in plain English - Claude handles the implementation
+    No more complicated instructions. Just say what you want, and Claude writes the code.
   </Card>
   <Card
-    title="Secure Sandbox Environment"
+    title="Safe & Secure Environment"
     icon="shield-halved"
     href="/quickstart"
   >
-    Your code runs in isolated environments that never affect your local system
+    All changes happen safely in a secure VM sandbox, never affecting your local environment.
   </Card>
   <Card
-    title="Template System"
+    title="Reusable Templates"
     icon="template"
     href="/templates"
   >
-    Pre-built workflows for common tasks like planning, analysis, and documentation
+    Automate common tasks easily with customizable workflows.
   </Card>
   <Card
-    title="Direct GitHub Integration"
+    title="Long running tasks (up to 30 mins)"
     icon="code-branch"
     href="/quickstart"
   >
-    Automatically clones repositories and pushes changes back to your specified branch
+    Changes sync effortlessly back to your repo—no manual push required.
   </Card>
 </CardGroup>
 
-## Use Cases
+## What Can You Do?
 
-- **Code Analysis**: Understand large codebases quickly
-- **Documentation**: Generate comprehensive docs for your projects
-- **Code Refactoring**: Modernize and improve existing code
-- **Feature Implementation**: Add new functionality with natural language descriptions
-- **Bug Fixes**: Identify and resolve issues across your codebase
+* **Quickly analyze** complex or unfamiliar codebases
+* **Automatically generate documentation** for your projects
+* **Easily refactor** or modernize existing code
+* **Add new features** simply by describing them
+* **Rapidly fix bugs** without tedious debugging sessions
+
+Cloud Coding makes your coding tasks easier, faster, and a whole lot simpler.
