@@ -290,92 +290,242 @@ Based on the actual system capabilities, you can specify these tools:
 
 Complete feature implementation from planning to deployment:
 
-```json
-{
-  "messages": [
-    {
-      "tools": ["Read", "LS", "Task"],
-      "content": "Analyze the current codebase and create a detailed plan for implementing user profiles with avatars, preferences, and activity history."
-    },
-    {
-      "tools": ["Write", "Edit"],
-      "content": "Implement the backend API endpoints for user profiles according to the plan",
-      "workingDir": "./backend",
-      "continueConversation": true
-    },
-    {
-      "tools": ["Write", "Edit"],
-      "content": "Create the frontend components for user profile management",
-      "workingDir": "./frontend/src/components",
-      "continueConversation": true
-    },
-    {
-      "tools": ["Write", "Bash"],
-      "content": "Add comprehensive tests and run the test suite",
-      "continueConversation": true
-    }
-  ],
-  "haiku": false
-}
+```bash
+# Single API call approach - Full-stack feature implementation
+curl -X POST "https://api.cloudcoding.ai/invoke" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: your_api_key" \
+  -d '{
+    "messages": [
+      {
+        "tools": ["Read", "LS", "Task"],
+        "content": "Analyze the current codebase and create a detailed plan for implementing user profiles with avatars, preferences, and activity history."
+      },
+      {
+        "tools": ["Write", "Edit"],
+        "content": "Implement the backend API endpoints for user profiles according to the plan",
+        "continueConversation": true
+      },
+      {
+        "tools": ["Write", "Edit"],
+        "content": "Create the frontend components for user profile management",
+        "continueConversation": true
+      },
+      {
+        "tools": ["Write", "Bash"],
+        "content": "Add comprehensive tests and run the test suite",
+        "continueConversation": true
+      }
+    ],
+    "repo_url": "https://github.com/username/fullstack-app",
+    "github_token": "ghp_...",
+    "branch": "user-profiles-feature",
+    "haiku": false
+  }'
+
+# Alternative: Directory-focused approach (separate API calls)
+# Call 1: Backend implementation
+curl -X POST "https://api.cloudcoding.ai/invoke" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: your_api_key" \
+  -d '{
+    "messages": [
+      {
+        "tools": ["Read", "LS"],
+        "content": "Analyze the backend structure and implement user profile API endpoints with avatars, preferences, and activity history",
+        "workingDir": "./backend"
+      }
+    ],
+    "repo_url": "https://github.com/username/fullstack-app",
+    "github_token": "ghp_...",
+    "branch": "user-profiles-feature",
+    "haiku": false
+  }'
+
+# Call 2: Frontend implementation
+curl -X POST "https://api.cloudcoding.ai/invoke" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: your_api_key" \
+  -d '{
+    "messages": [
+      {
+        "tools": ["Write", "Edit"],
+        "content": "Create React components for user profile management, integrating with the backend APIs",
+        "workingDir": "./frontend/src/components"
+      }
+    ],
+    "repo_url": "https://github.com/username/fullstack-app",
+    "github_token": "ghp_...",
+    "branch": "user-profiles-feature",
+    "haiku": false
+  }'
 ```
 
 ### Security Audit Workflow
 
 Comprehensive security review and fixes:
 
-```json
-{
-  "messages": [
-    {
-      "tools": ["Read", "Grep", "WebSearch"],
-      "content": "Conduct a thorough security audit of this application, checking for common vulnerabilities like SQL injection, XSS, CSRF, and insecure authentication"
-    },
-    {
-      "tools": ["Edit", "Write"],
-      "content": "Fix all identified security vulnerabilities and implement security best practices",
-      "continueConversation": true
-    },
-    {
-      "tools": ["Bash", "WebSearch"],
-      "content": "Run security tests and validate that all vulnerabilities have been resolved",
-      "continueConversation": true
-    }
-  ],
-  "haiku": false
-}
+```bash
+curl -X POST "https://api.cloudcoding.ai/invoke" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: your_api_key" \
+  -d '{
+    "messages": [
+      {
+        "tools": ["Read", "Grep", "WebSearch"],
+        "content": "Conduct a thorough security audit of this application, checking for common vulnerabilities like SQL injection, XSS, CSRF, and insecure authentication"
+      },
+      {
+        "tools": ["Edit", "Write"],
+        "content": "Fix all identified security vulnerabilities and implement security best practices",
+        "continueConversation": true
+      },
+      {
+        "tools": ["Bash", "WebSearch"],
+        "content": "Run security tests and validate that all vulnerabilities have been resolved",
+        "continueConversation": true
+      }
+    ],
+    "repo_url": "https://github.com/username/secure-app",
+    "github_token": "ghp_...",
+    "branch": "security-audit-fixes",
+    "haiku": false
+  }'
 ```
 
 ### Code Migration Workflow
 
-Large-scale code transformations:
+Large-scale TypeScript migration using directory-focused approach:
 
-```json
-{
-  "messages": [
-    {
-      "tools": ["Read", "LS", "Grep"],
-      "content": "Analyze the entire JavaScript codebase and create a comprehensive migration strategy for converting to TypeScript. Identify dependencies, type challenges, and migration priorities."
-    },
-    {
-      "tools": ["Edit", "Write"],
-      "content": "Start with utility functions and shared modules - convert them to TypeScript with proper type definitions",
-      "workingDir": "./src/utils",
-      "continueConversation": true
-    },
-    {
-      "tools": ["Edit", "Write"],
-      "content": "Convert React components to TypeScript with proper prop interfaces and state types",
-      "workingDir": "./src/components",
-      "continueConversation": true
-    },
-    {
-      "tools": ["Bash"],
-      "content": "Run TypeScript compiler, fix any type errors, and ensure the build passes",
-      "continueConversation": true
-    }
-  ],
-  "haiku": false
-}
+```bash
+# Call 1: Analysis and utilities migration
+curl -X POST "https://api.cloudcoding.ai/invoke" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: your_api_key" \
+  -d '{
+    "messages": [
+      {
+        "tools": ["Read", "LS", "Grep"],
+        "content": "Analyze the JavaScript codebase and create a comprehensive TypeScript migration strategy. Start by converting utility functions and shared modules with proper type definitions.",
+        "workingDir": "./src/utils"
+      }
+    ],
+    "repo_url": "https://github.com/username/typescript-migration",
+    "github_token": "ghp_...",
+    "branch": "typescript-conversion",
+    "haiku": false
+  }'
+
+# Call 2: Components migration
+curl -X POST "https://api.cloudcoding.ai/invoke" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: your_api_key" \
+  -d '{
+    "messages": [
+      {
+        "tools": ["Edit", "Write"],
+        "content": "Convert React components to TypeScript with proper prop interfaces and state types, using the utility types we defined",
+        "workingDir": "./src/components"
+      }
+    ],
+    "repo_url": "https://github.com/username/typescript-migration",
+    "github_token": "ghp_...",
+    "branch": "typescript-conversion",
+    "haiku": false
+  }'
+
+# Call 3: Final validation
+curl -X POST "https://api.cloudcoding.ai/invoke" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: your_api_key" \
+  -d '{
+    "messages": [
+      {
+        "tools": ["Bash", "Read"],
+        "content": "Run TypeScript compiler across the entire project, fix any remaining type errors, and ensure the build passes"
+      }
+    ],
+    "repo_url": "https://github.com/username/typescript-migration",
+    "github_token": "ghp_...",
+    "branch": "typescript-conversion",
+    "haiku": false
+  }'
+```
+
+### API Refactoring Workflow
+
+Single-directory focused refactoring:
+
+```bash
+curl -X POST "https://api.cloudcoding.ai/invoke" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: your_api_key" \
+  -d '{
+    "messages": [
+      {
+        "tools": ["Read", "LS", "Grep"],
+        "content": "Analyze the API routes and identify opportunities for better error handling, validation, and performance"
+      },
+      {
+        "tools": ["Edit", "Write"],
+        "content": "Refactor API endpoints to use consistent error handling middleware and request validation",
+        "continueConversation": true
+      },
+      {
+        "tools": ["Write"],
+        "content": "Add comprehensive API documentation and update existing endpoint documentation",
+        "continueConversation": true
+      },
+      {
+        "tools": ["Bash"],
+        "content": "Run API tests and performance benchmarks to validate the improvements",
+        "continueConversation": true
+      }
+    ],
+    "repo_url": "https://github.com/username/api-refactor",
+    "github_token": "ghp_...",
+    "branch": "api-improvements",
+    "workingDir": "./api",
+    "haiku": false
+  }'
+```
+
+### Database Schema Migration
+
+Focused database work:
+
+```bash
+curl -X POST "https://api.cloudcoding.ai/invoke" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: your_api_key" \
+  -d '{
+    "messages": [
+      {
+        "tools": ["Read", "LS"],
+        "content": "Analyze the current database schema and create a migration plan for better normalization and performance"
+      },
+      {
+        "tools": ["Write", "Edit"],
+        "content": "Create database migration scripts for schema improvements",
+        "continueConversation": true
+      },
+      {
+        "tools": ["Edit"],
+        "content": "Update ORM models and queries to work with the new schema",
+        "continueConversation": true
+      },
+      {
+        "tools": ["Bash"],
+        "content": "Test the migration scripts and validate data integrity",
+        "continueConversation": true
+      }
+    ],
+    "repo_url": "https://github.com/username/db-migration",
+    "github_token": "ghp_...",
+    "branch": "schema-improvements",
+    "workingDir": "./database",
+    "haiku": false
+  }'
 ```
 
 ## Advanced Features
@@ -556,7 +706,7 @@ Then evolve to:
 import requests
 import json
 
-def create_custom_workflow(api_key, messages, repo_url, github_token, branch="main"):
+def create_custom_workflow(api_key, messages, repo_url, github_token, branch="main", working_dir=None):
     """
     Execute a custom message workflow.
     """
@@ -574,6 +724,10 @@ def create_custom_workflow(api_key, messages, repo_url, github_token, branch="ma
         "haiku": True
     }
 
+    # Add workingDir to the first message if specified
+    if working_dir and messages:
+        messages[0]["workingDir"] = working_dir
+
     response = requests.post(url, headers=headers, json=payload, stream=True)
 
     for line in response.iter_lines():
@@ -584,8 +738,36 @@ def create_custom_workflow(api_key, messages, repo_url, github_token, branch="ma
             except json.JSONDecodeError:
                 continue
 
-# Example usage
-messages = [
+def multi_directory_workflow(api_key, workflow_steps, repo_url, github_token, branch="main"):
+    """
+    Execute a workflow across multiple directories using separate API calls.
+    Each step is a dict with 'directory', 'messages', and optional 'description'.
+    """
+    results = []
+
+    for i, step in enumerate(workflow_steps):
+        print(f"Executing step {i+1}: {step.get('description', f'Work in {step[\"directory\"]}')}")
+
+        # Each directory requires a separate API call
+        messages = step["messages"]
+        if step["directory"]:
+            # Add workingDir to the first message
+            if messages and isinstance(messages[0], dict):
+                messages[0]["workingDir"] = step["directory"]
+
+        step_results = list(create_custom_workflow(
+            api_key, messages, repo_url, github_token, branch
+        ))
+        results.append({
+            "step": i+1,
+            "directory": step["directory"],
+            "results": step_results
+        })
+
+    return results
+
+# Example 1: Single directory workflow
+single_dir_messages = [
     {
         "tools": "all",
         "content": "Add comprehensive error handling and logging to this application"
@@ -597,23 +779,68 @@ messages = [
     }
 ]
 
-for event in create_custom_workflow("your_api_key", messages, "https://github.com/user/repo", "ghp_token"):
+print("Single directory workflow:")
+for event in create_custom_workflow("your_api_key", single_dir_messages,
+                                   "https://github.com/user/repo", "ghp_token"):
     print(f"Event: {event}")
+
+# Example 2: Multi-directory workflow (separate API calls)
+workflow_steps = [
+    {
+        "directory": "./backend",
+        "description": "Backend API improvements",
+        "messages": [
+            {
+                "tools": ["Read", "Edit"],
+                "content": "Improve API error handling and add request validation"
+            }
+        ]
+    },
+    {
+        "directory": "./frontend",
+        "description": "Frontend error handling",
+        "messages": [
+            {
+                "tools": ["Edit", "Write"],
+                "content": "Add error boundaries and improved error messaging to React components"
+            }
+        ]
+    },
+    {
+        "directory": None,  # Repository root
+        "description": "Integration testing",
+        "messages": [
+            {
+                "tools": ["Bash", "Write"],
+                "content": "Run end-to-end tests to validate error handling across the full stack"
+            }
+        ]
+    }
+]
+
+print("\nMulti-directory workflow:")
+results = multi_directory_workflow("your_api_key", workflow_steps,
+                                  "https://github.com/user/repo", "ghp_token",
+                                  branch="error-handling-improvements")
+
+for result in results:
+    print(f"Step {result['step']} ({'Root' if not result['directory'] else result['directory']}): {len(result['results'])} events")
 ```
 
 ## Common Patterns Summary
 
-| Pattern | Use Case | Example |
-|---------|----------|---------|
-| **Single Message** | Simple tasks | Add dark mode toggle |
-| **Multi-Step** | Related task sequence | Plan → Implement → Test |
-| **Tool-Controlled** | Specific operations | Read-only analysis, then editing |
-| **Task Planning** | Complex feature development | Plan → Implement → Test → Deploy |
-| **Directory-Focused** | Large codebase work (separate calls) | Component migration per directory |
+| Pattern | Use Case | Implementation | Example |
+|---------|----------|----------------|---------|
+| **Single Message** | Simple, focused tasks | One message, any directory | Add dark mode toggle |
+| **Multi-Step** | Related task sequence in same scope | Multiple messages with `continueConversation: true` | Plan → Implement → Test |
+| **Tool-Controlled** | Specific operations with controlled tool access | Messages with specific tool arrays | Read-only analysis, then targeted editing |
+| **Task Planning** | Complex feature development | Analysis → Implementation → Testing flow | Plan → Implement → Test → Deploy |
+| **Single Directory Focus** | Work within one directory | `workingDir` + multi-step messages | Component library refactoring |
+| **Multi-Directory** | Large codebase work across directories | **Separate API calls** (cannot use `continueConversation`) | TypeScript migration per directory |
 
-<Info>
-**Note**: Directory-focused patterns require separate API calls due to the `workingDir` + `continueConversation` limitation.
-</Info>
+<Warning>
+**Critical Pattern Limitation**: Multi-directory workflows **must** use separate API calls. You cannot change `workingDir` and use `continueConversation: true` in the same request. This is a system-level constraint, not a documentation suggestion.
+</Warning>
 
 ## Next Steps
 
