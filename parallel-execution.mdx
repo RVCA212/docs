@@ -1,0 +1,95 @@
+---
+title: 'Parallel Execution'
+description: 'Run multiple coding tasks concurrently with the /invoke/stdout endpoint.'
+---
+
+## Overview
+
+The `/invoke/stdout` endpoint supports parallel execution, allowing you to run multiple coding tasks concurrently for faster development workflows. Each task runs independently, and you can track its output in real-time.
+
+## Request Structure
+
+To run tasks in parallel, provide a `parallel_tasks` array in your request to the `/invoke/stdout` endpoint. See the [Quickstart](/quickstart) for details on authentication and other request parameters.
+
+```json
+{
+  "repo_url": "https://github.com/username/repo",
+  "github_token": "YOUR_GITHUB_TOKEN",
+  "branch": "main",
+  "parallel_tasks": [
+    {
+      "prompt": "Create comprehensive API documentation",
+      "task_name": "api-docs"
+    },
+    {
+      "prompt": "Add unit tests for all components",
+      "task_name": "unit-tests"
+    }
+  ]
+}
+```
+
+## Task Configuration
+
+Each object in the `parallel_tasks` array requires the following fields:
+
+| Field | Type | Required | Description |
+|--- |--- |--- |--- |
+| `prompt` | string | ✅ | The prompt/query for this task. |
+| `task_name`| string | ✅ | A unique identifier for the task. |
+
+## Example
+
+This example runs two tasks in parallel. The stream will contain interleaved `custom` events from each task, identified by `task_name`.
+
+```bash
+curl -X POST "https://api.cloudcoding.ai/invoke/stdout" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: YOUR_API_KEY" \
+  --no-buffer \
+  -d '{
+    "repo_url": "https://github.com/username/my-app",
+    "github_token": "YOUR_GITHUB_TOKEN",
+    "parallel_tasks": [
+      {
+        "prompt": "Add comprehensive error handling",
+        "task_name": "error-handling"
+      },
+      {
+        "prompt": "Create unit tests for all components",
+        "task_name": "testing"
+      }
+    ]
+  }'
+```
+
+## Response Stream
+
+The API returns a stream of Server-Sent Events (SSE). You can distinguish between outputs from different parallel tasks by checking the `task_name` in the `data` payload of `custom` events.
+
+**Example `custom` event from the "testing" task:**
+```json
+{
+  "event": "custom",
+  "data": {
+    "task_name": "testing",
+    "stdout": "Running tests for component A...\n"
+  }
+}
+```
+
+Refer to the [Quickstart](/quickstart) for more details on the response stream.
+
+## Next Steps
+
+<CardGroup>
+
+<Card title="Quickstart" icon="rocket" href="/quickstart">
+  Get started with the API and single task invocations
+</Card>
+
+<Card title="Dashboard" icon="chart-line" href="https://cloudcoding.ai/home">
+  Manage your API keys and monitor usage
+</Card>
+
+</CardGroup>

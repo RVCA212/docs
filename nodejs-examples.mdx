@@ -1,0 +1,145 @@
+---
+title: 'Node.js Examples'
+description: 'Learn how to use the Cloud Coding API with Node.js to stream real-time events.'
+---
+
+Here's how to use the `/invoke/stdout` endpoint with Node.js to stream Server-Sent Events (SSE) from the Cloud Coding API. We'll use the `eventsource` package, which simplifies handling SSE connections.
+
+## Installation
+
+First, add the `eventsource` package to your project:
+```bash
+npm install eventsource
+# or
+yarn add eventsource
+```
+
+<Note>
+The following examples use `require` for Node.js compatibility. If you are using ES modules, you can use `import EventSource from 'eventsource'`.
+</Note>
+
+## Single Task Invocation
+
+This example invokes a single task and listens for `updates` and `custom` events from the stream.
+
+```javascript
+const EventSource = require('eventsource');
+const { inspect } = require('util');
+
+// --- Configuration ---
+const API_KEY = 'YOUR_CLOUDCODING_API_KEY';
+const GITHUB_TOKEN = 'YOUR_GITHUB_TOKEN';
+const REPO_URL = 'https://github.com/username/repo-name';
+const API_URL = 'https://api.cloudcoding.ai/invoke/stdout';
+
+// --- Request Body ---
+const body = {
+  repo_url: REPO_URL,
+  github_token: GITHUB_TOKEN,
+  messages: [
+    {
+      type: 'human',
+      content: 'analyze the repo to see what it is about',
+    },
+  ],
+};
+
+// --- EventSource Configuration ---
+const eventSourceInitDict = {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'x-api-key': API_KEY,
+  },
+  body: JSON.stringify(body),
+};
+
+console.log('Connecting to the API...');
+const es = new EventSource(API_URL, eventSourceInitDict);
+
+es.addEventListener('updates', (event) => {
+    const data = JSON.parse(event.data);
+    console.log("\n--- Received 'updates' event ---");
+    console.log(inspect(data, { depth: null, colors: true }));
+});
+
+es.addEventListener('custom', (event) => {
+    const data = JSON.parse(event.data);
+    console.log("\n--- Received 'custom' event ---");
+    console.log(inspect(data, { depth: null, colors: true }));
+});
+
+es.onerror = (err) => {
+  console.error('EventSource failed:', err);
+  if (err && err.status) {
+    console.error(`Error: Status ${err.status}`);
+  }
+  es.close();
+};
+```
+
+## Parallel Task Invocation
+
+This example runs two tasks in parallel. The `custom` event's data includes a `task_name`, which you can use to identify which task produced the output.
+
+```javascript
+const EventSource = require('eventsource');
+const { inspect } = require('util');
+
+// --- Configuration ---
+const API_KEY = 'YOUR_CLOUDCODING_API_KEY';
+const GITHUB_TOKEN = 'YOUR_GITHUB_TOKEN';
+const REPO_URL = 'https://github.com/username/my-app';
+const API_URL = 'https://api.cloudcoding.ai/invoke/stdout';
+
+// --- Request Body ---
+const body = {
+    "repo_url": REPO_URL,
+    "github_token": GITHUB_TOKEN,
+    "parallel_tasks": [
+      {
+        "prompt": "Add comprehensive error handling",
+        "task_name": "error-handling"
+      },
+      {
+        "prompt": "Create unit tests for all components",
+        "task_name": "testing"
+      }
+    ]
+};
+
+// --- EventSource Configuration ---
+const eventSourceInitDict = {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'x-api-key': API_KEY,
+  },
+  body: JSON.stringify(body),
+};
+
+console.log('Connecting to the API for parallel tasks...');
+const es = new EventSource(API_URL, eventSourceInitDict);
+
+es.addEventListener('updates', (event) => {
+    const data = JSON.parse(event.data);
+    console.log("\n--- Received 'updates' event ---");
+    console.log(inspect(data, { depth: null, colors: true }));
+});
+
+es.addEventListener('custom', (event) => {
+    const data = JSON.parse(event.data);
+    const taskName = data.data.task_name;
+    const stdout = data.data.stdout;
+    console.log(`\n--- Received 'custom' event for task: ${taskName} ---`);
+    console.log(stdout);
+});
+
+es.onerror = (err) => {
+  console.error('EventSource failed:', err);
+  if (err && err.status) {
+    console.error(`Error: Status ${err.status}`);
+  }
+  es.close();
+};
+```

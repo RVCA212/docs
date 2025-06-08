@@ -18,7 +18,15 @@
             "pages": [
               "introduction",
               "quickstart",
+              "parallel-execution",
               "pricing"
+            ]
+          },
+          {
+            "group": "Code Examples",
+            "pages": [
+              "python-examples",
+              "nodejs-examples"
             ]
           },
           {
